@@ -6,6 +6,7 @@ import type {
   CreateInboundTransactionPayload,
   CreateOutboundTransactionPayload,
   Product,
+  Transaction,
 } from '@/types/warehouse';
 
 interface TransactionFormProps {
