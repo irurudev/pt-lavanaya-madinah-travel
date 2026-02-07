@@ -15,11 +15,17 @@ import { FiCalendar, FiPlusCircle } from 'react-icons/fi';
 import { PaginationControls } from '@/components/PaginationControls';
 import { useStockSnapshots } from '@/hooks/useSnapshot';
 import WarehouseLayout from '@/layouts/WarehouseLayout';
+import { usePage } from '@inertiajs/react';
 
 /**
  * Halaman laporan snapshot stok per periode
  */
 export default function StockSnapshotPage() {
+  const { props } = usePage();
+  const user = (props.auth as Record<string, unknown>)?.user as Record<string, unknown> | undefined;
+  const userRole = (user?.role as string) || '';
+  const isViewer = userRole === 'viewer';
+
   const {
     periods,
     selectedPeriod,
@@ -77,33 +83,38 @@ export default function StockSnapshotPage() {
               )}
             </select>
           </Box>
-          <Button
-            colorScheme="teal"
-            onClick={() => createSnapshot(selectedPeriod || undefined)}
-            loading={isCreating}
-            loadingText="Creating..."
-            size="sm"
-            display="flex"
-            gap={2}
-            alignItems="center"
-          >
-            <FiPlusCircle />
-            Create Snapshot
-          </Button>
-          <Button
-            variant="outline"
-            colorScheme="teal"
-            onClick={() => createPreviousMonthSnapshot()}
-            loading={isCreating}
-            loadingText="Creating..."
-            size="sm"
-            display="flex"
-            gap={2}
-            alignItems="center"
-          >
-            <FiCalendar />
-            Previous Month
-          </Button>
+          {/* Hide create buttons untuk viewer - mereka hanya bisa view dan export */}
+          {!isViewer && (
+            <>
+              <Button
+                colorScheme="teal"
+                onClick={() => createSnapshot(selectedPeriod || undefined)}
+                loading={isCreating}
+                loadingText="Creating..."
+                size="sm"
+                display="flex"
+                gap={2}
+                alignItems="center"
+              >
+                <FiPlusCircle />
+                Create Snapshot
+              </Button>
+              <Button
+                variant="outline"
+                colorScheme="teal"
+                onClick={() => createPreviousMonthSnapshot()}
+                loading={isCreating}
+                loadingText="Creating..."
+                size="sm"
+                display="flex"
+                gap={2}
+                alignItems="center"
+              >
+                <FiCalendar />
+                Previous Month
+              </Button>
+            </>
+          )}
         </Flex>
 
         {/* Summary Cards */}

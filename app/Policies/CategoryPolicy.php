@@ -10,10 +10,11 @@ class CategoryPolicy
 {
     /**
      * Check apakah user bisa view categories
+     * Viewer tidak bisa akses - hanya admin dan operator
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermission('view_categories');
+        return $user->isAdmin() || $user->isOperator();
     }
 
     /**

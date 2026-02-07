@@ -45,33 +45,39 @@ export function Sidebar() {
   const { url, props } = usePage();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const user = (props.auth as Record<string, unknown>)?.user as Record<string, unknown> | undefined;
-  const isAdmin = (user?.role as string) === 'admin';
+  const userRole = (user?.role as string) || '';
+  const isAdmin = userRole === 'admin';
+  const isViewer = userRole === 'viewer';
 
   const handleLogout = () => {
     router.post('/logout');
   };
 
+  // Viewer hanya bisa akses Dashboard dan Laporan (view + export only)
   const navItems: NavItem[] = [
     {
       label: 'Dashboard',
       href: '/warehouse/dashboard',
       icon: <FiHome size={20} />,
     },
-    {
-      label: 'Kategori',
-      href: '/warehouse/categories',
-      icon: <FiTag size={20} />,
-    },
-    {
-      label: 'Produk',
-      href: '/warehouse/products',
-      icon: <FiBox size={20} />,
-    },
-    {
-      label: 'Mutasi Stok',
-      href: '/warehouse/transactions',
-      icon: <FiActivity size={20} />,
-    },
+    // Kategori, Produk, dan Mutasi Stok - hidden untuk viewer
+    ...(!isViewer ? [
+      {
+        label: 'Kategori',
+        href: '/warehouse/categories',
+        icon: <FiTag size={20} />,
+      },
+      {
+        label: 'Produk',
+        href: '/warehouse/products',
+        icon: <FiBox size={20} />,
+      },
+      {
+        label: 'Mutasi Stok',
+        href: '/warehouse/transactions',
+        icon: <FiActivity size={20} />,
+      },
+    ] : []),
     {
       label: 'Laporan Stok',
       href: '/warehouse/reports/stock',

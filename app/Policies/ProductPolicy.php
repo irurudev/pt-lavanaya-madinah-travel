@@ -10,11 +10,11 @@ class ProductPolicy
 {
     /**
      * Check apakah user bisa view products
-     * Viewer, Operator, dan Admin bisa view
+     * Viewer tidak bisa akses - hanya admin dan operator
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermission('view_products');
+        return $user->isAdmin() || $user->isOperator();
     }
 
     /**
