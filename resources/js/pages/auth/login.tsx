@@ -22,11 +22,7 @@ interface DemoAccount {
   description: string;
 }
 
-interface LoginProps {
-  // Props kosong - tidak perlu csrf_token manual
-}
-
-export default function Login({}: LoginProps) {
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -70,14 +66,15 @@ export default function Login({}: LoginProps) {
           // Login berhasil - redirect sudah ditangani server
           setLoading(false);
         },
-        onError: (errors: any) => {
+        onError: (errors: Record<string, unknown>) => {
           // Handle validation errors dari Laravel
           setLoading(false);
           // Inertia errors bisa berupa string atau array
-          const errorMsg = typeof errors.email === 'string' 
-            ? errors.email 
-            : (Array.isArray(errors.email) ? errors.email[0] : 'Email atau password salah');
-          setError(errorMsg);
+          const emailError = errors.email;
+          const errorMsg = typeof emailError === 'string' 
+            ? emailError 
+            : (Array.isArray(emailError) ? emailError[0] : 'Email atau password salah');
+          setError(errorMsg as string);
         },
       }
     );

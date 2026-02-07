@@ -27,8 +27,8 @@ interface UseUsersReturn {
   currentPage: number;
   setCurrentPage: (page: number) => void;
   refetch: () => void;
-  createUser: (data: any) => Promise<User>;
-  updateUser: (id: number, data: any) => Promise<User>;
+  createUser: (data: Record<string, unknown>) => Promise<User>;
+  updateUser: (id: number, data: Record<string, unknown>) => Promise<User>;
 }
 
 export const useUsers = (): UseUsersReturn => {
@@ -48,31 +48,37 @@ export const useUsers = (): UseUsersReturn => {
       setUsers(response.data.data);
       setPagination(response.data.pagination);
       setCurrentPage(page);
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Gagal mengambil data user';
-      setError(message);
+    } catch (err: unknown) {
+      const message = err instanceof Error && 'response' in err
+        ? (err as Record<string, unknown>).response as Record<string, unknown>
+        : null;
+      setError((message?.data as Record<string, unknown>)?.message as string || 'Gagal mengambil data user');
     } finally {
       setLoading(false);
     }
   };
 
-  const createUser = async (data: any) => {
+  const createUser = async (data: Record<string, unknown>) => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await axios.post('/users', data);
       await fetchUsers(currentPage);
       return response.data.data;
-    } catch (err: any) {
-      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const updateUser = async (id: number, data: any) => {
+  const updateUser = async (id: number, data: Record<string, unknown>) => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await axios.put(`/users/${id}`, data);
       await fetchUsers(currentPage);
       return response.data.data;
-    } catch (err: any) {
-      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 

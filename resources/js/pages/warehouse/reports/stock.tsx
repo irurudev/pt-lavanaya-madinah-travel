@@ -12,7 +12,7 @@ import {
   Grid,
   Card,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FiDownload, FiSearch } from 'react-icons/fi';
 import * as reportApi from '@/api/reportApi';
 import { PaginationControls } from '@/components/PaginationControls';
@@ -24,7 +24,7 @@ import WarehouseLayout from '@/layouts/WarehouseLayout';
  * Menampilkan ringkasan dan detail stok semua produk
  */
 export default function StockReportPage() {
-  const { items, summary, pagination, page, setPage, loading, error } = useStockReport();
+  const { items, summary, pagination, setPage, loading, error } = useStockReport();
   const [searchQuery, setSearchQuery] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [exportFormat, setExportFormat] = useState<'csv' | 'pdf'>('csv');
@@ -33,10 +33,6 @@ export default function StockReportPage() {
     `${item.sku} ${item.name} ${item.category?.name || ''}`.toLowerCase()
       .includes(searchQuery.toLowerCase()),
   );
-
-  // Hitung statistik tambahan
-  const totalValue = filteredItems.reduce((sum, item) => sum + item.stock_value, 0);
-  const averageValue = filteredItems.length > 0 ? totalValue / filteredItems.length : 0;
 
   const handleExport = async () => {
     try {

@@ -18,7 +18,7 @@ interface UserFormProps {
   } | null;
   onSuccess: () => void;
   onCancel: () => void;
-  onSubmit: (data: any) => Promise<any>;
+  onSubmit: (data: Record<string, unknown>) => Promise<void>;
 }
 
 export const UserForm = ({
@@ -96,19 +96,20 @@ export const UserForm = ({
     try {
       setLoading(true);
 
-      const submitData = { ...formData };
+      const submitData = { ...formData } as Record<string, unknown>;
 
       // Jika edit dan password kosong, jangan kirim password
       if (user && !submitData.password) {
-        delete (submitData as any).password;
+        delete submitData.password;
       }
 
       await onSubmit(submitData);
       onSuccess();
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || 'Terjadi kesalahan saat menyimpan user';
-      setError(errorMessage);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as Record<string, unknown>).response as Record<string, unknown> 
+        : null;
+      setError((errorMessage?.data as Record<string, unknown>)?.message as string || 'Terjadi kesalahan saat menyimpan user');
     } finally {
       setLoading(false);
     }

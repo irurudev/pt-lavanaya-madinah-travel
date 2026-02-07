@@ -8,8 +8,8 @@ interface ProductFormProps {
   onSuccess?: () => void;
   initialData?: Product;
   categories?: Category[];
-  onCreateProduct?: (payload: CreateProductPayload) => Promise<any>;
-  onUpdateProduct?: (id: number, payload: UpdateProductPayload) => Promise<any>;
+  onCreateProduct?: (payload: CreateProductPayload) => Promise<void>;
+  onUpdateProduct?: (id: number, payload: UpdateProductPayload) => Promise<void>;
   isLoading?: boolean;
   apiError?: string | null;
 }

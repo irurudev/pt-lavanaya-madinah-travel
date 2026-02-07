@@ -12,7 +12,7 @@ import {
   Card,
   Tabs,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FiDownload } from 'react-icons/fi';
 import * as reportApi from '@/api/reportApi';
 import { PaginationControls } from '@/components/PaginationControls';
@@ -123,7 +123,6 @@ export default function TransactionReportPage() {
   const inboundReport = useInboundReport();
   const outboundReport = useOutboundReport();
   const [isExporting, setIsExporting] = useState(false);
-  const [exportType, setExportType] = useState<'all' | 'in' | 'out'>('all');
   const [exportFormat, setExportFormat] = useState<'csv' | 'pdf'>('csv');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');

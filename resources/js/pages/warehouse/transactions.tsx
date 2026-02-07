@@ -20,7 +20,7 @@ import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-sele
 import { useProducts } from '@/hooks/useProducts';
 import { useTransactions } from '@/hooks/useTransactions';
 import WarehouseLayout from '@/layouts/WarehouseLayout';
-import type { Transaction, TransactionType } from '@/types/warehouse';
+import type { TransactionType } from '@/types/warehouse';
 
 /**
  * Halaman untuk mengelola transaksi
@@ -88,9 +88,7 @@ export default function TransactionsPage() {
     return type === 'in' ? 'Barang Masuk' : 'Barang Keluar';
   };
 
-  const getTypeColor = (type: TransactionType) => {
-    return type === 'in' ? 'badge-success' : 'badge-error';
-  };
+
 
   return (
     <WarehouseLayout>

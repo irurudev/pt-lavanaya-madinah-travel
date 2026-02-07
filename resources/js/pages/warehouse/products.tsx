@@ -11,8 +11,7 @@ import {
   Badge,
   IconButton,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { FiEdit2, FiTrash2, FiSearch } from 'react-icons/fi';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { PaginationControls } from '@/components/PaginationControls';
 import { ProductForm } from '@/components/ProductForm';
 import { useCategories } from '@/hooks/useCategories';

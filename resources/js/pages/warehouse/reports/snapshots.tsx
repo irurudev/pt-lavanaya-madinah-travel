@@ -11,7 +11,7 @@ import {
   Card,
   Badge,
 } from '@chakra-ui/react';
-import { FiCalendar, FiPlusCircle, FiRefreshCcw } from 'react-icons/fi';
+import { FiCalendar, FiPlusCircle } from 'react-icons/fi';
 import { PaginationControls } from '@/components/PaginationControls';
 import { useStockSnapshots } from '@/hooks/useSnapshot';
 import WarehouseLayout from '@/layouts/WarehouseLayout';

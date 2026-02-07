@@ -12,7 +12,7 @@ export interface NativeSelectRootProps extends BoxProps {
 }
 
 export const NativeSelectRoot = forwardRef<HTMLDivElement, NativeSelectRootProps>(
-  ({ size = 'md', children, ...props }, ref) => {
+  ({ children, ...props }, ref) => {
     return (
       <Box ref={ref} position="relative" {...props}>
         {children}

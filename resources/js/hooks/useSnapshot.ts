@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import * as snapshotApi from '@/api/snapshotApi';
 import type { PaginationMeta, StockSnapshotItem, StockSnapshotSummary } from '@/types/warehouse';
 
@@ -17,7 +17,7 @@ export function useStockSnapshots() {
   const [error, setError] = useState<string | null>(null);
   const perPage = 10;
 
-  const loadPeriods = async () => {
+  const loadPeriods = useCallback(async () => {
     try {
       setError(null);
       const result = await snapshotApi.getSnapshotPeriods();
@@ -30,9 +30,9 @@ export function useStockSnapshots() {
       setError(err instanceof Error ? err.message : 'Gagal memuat periode snapshot');
       setLoading(false);
     }
-  };
+  }, [selectedPeriod]);
 
-  const loadSnapshots = async (period: string, targetPage = page) => {
+  const loadSnapshots = useCallback(async (period: string, targetPage = 1) => {
     try {
       setLoading(true);
       setError(null);
@@ -46,7 +46,7 @@ export function useStockSnapshots() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [perPage]);
 
   const createSnapshot = async (period?: string) => {
     try {
@@ -89,13 +89,13 @@ export function useStockSnapshots() {
 
   useEffect(() => {
     loadPeriods();
-  }, []);
+  }, [loadPeriods]);
 
   useEffect(() => {
     if (selectedPeriod) {
       loadSnapshots(selectedPeriod, page);
     }
-  }, [selectedPeriod, page]);
+  }, [selectedPeriod, page, loadSnapshots]);
 
   return {
     periods,

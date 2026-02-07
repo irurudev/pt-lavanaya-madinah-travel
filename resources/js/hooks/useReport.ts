@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import * as reportApi from '@/api/reportApi';
 import type {
   PaginationMeta,
@@ -21,7 +21,7 @@ export function useStockReport() {
   const [error, setError] = useState<string | null>(null);
   const perPage = 10;
 
-  const fetchReport = async (targetPage = page) => {
+  const fetchReport = useCallback(async (targetPage = 1) => {
     try {
       setLoading(true);
       setError(null);
@@ -35,11 +35,11 @@ export function useStockReport() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [perPage]);
 
   useEffect(() => {
-    fetchReport();
-  }, [page]);
+    fetchReport(page);
+  }, [page, fetchReport]);
 
   return {
     items,
@@ -65,7 +65,7 @@ export function useTransactionReport() {
   const [error, setError] = useState<string | null>(null);
   const perPage = 10;
 
-  const fetchReport = async (targetPage = page) => {
+  const fetchReport = useCallback(async (targetPage = 1) => {
     try {
       setLoading(true);
       setError(null);
@@ -79,11 +79,11 @@ export function useTransactionReport() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [perPage]);
 
   useEffect(() => {
-    fetchReport();
-  }, [page]);
+    fetchReport(page);
+  }, [page, fetchReport]);
 
   return {
     items,
@@ -108,7 +108,7 @@ export function useInboundReport() {
   const [error, setError] = useState<string | null>(null);
   const perPage = 10;
 
-  const fetchReport = async (targetPage = page) => {
+  const fetchReport = useCallback(async (targetPage = 1) => {
     try {
       setLoading(true);
       setError(null);
@@ -121,11 +121,11 @@ export function useInboundReport() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [perPage]);
 
   useEffect(() => {
-    fetchReport();
-  }, [page]);
+    fetchReport(page);
+  }, [page, fetchReport]);
 
   return {
     items,
@@ -149,7 +149,7 @@ export function useOutboundReport() {
   const [error, setError] = useState<string | null>(null);
   const perPage = 10;
 
-  const fetchReport = async (targetPage = page) => {
+  const fetchReport = useCallback(async (targetPage = 1) => {
     try {
       setLoading(true);
       setError(null);
@@ -162,11 +162,11 @@ export function useOutboundReport() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [perPage]);
 
   useEffect(() => {
-    fetchReport();
-  }, [page]);
+    fetchReport(page);
+  }, [page, fetchReport]);
 
   return {
     items,

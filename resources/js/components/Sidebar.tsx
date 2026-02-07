@@ -42,7 +42,7 @@ export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { url, props } = usePage();
   const isMobile = useBreakpointValue({ base: true, md: false });
-  const user = (props.auth as any)?.user;
+  const user = (props.auth as Record<string, unknown>)?.user;
   const isAdmin = user?.role === 'admin';
 
   const handleLogout = () => {

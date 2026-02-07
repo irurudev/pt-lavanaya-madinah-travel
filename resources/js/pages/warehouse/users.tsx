@@ -11,12 +11,11 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import { FiEdit2, FiPlus } from 'react-icons/fi';
+import { FiEdit2 } from 'react-icons/fi';
 import { PaginationControls } from '@/components/PaginationControls';
 import { UserForm } from '@/components/UserForm';
 import { useUsers } from '@/hooks/useUsers';
 import WarehouseLayout from '@/layouts/WarehouseLayout';
-import type { User } from '@/types/warehouse';
 
 export default function Users() {
   const {
@@ -24,14 +23,13 @@ export default function Users() {
     loading,
     error,
     pagination,
-    currentPage,
     setCurrentPage,
     createUser,
     updateUser,
   } = useUsers();
 
   const [showForm, setShowForm] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<Record<string, unknown> | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -43,8 +41,8 @@ export default function Users() {
     }
   }, [successMessage]);
 
-  const handleOpenForm = (user: any = null) => {
-    setSelectedUser(user);
+  const handleOpenForm = (userToEdit: Record<string, unknown> | null = null) => {
+    setSelectedUser(userToEdit);
     setShowForm(true);
   };
 
@@ -54,21 +52,22 @@ export default function Users() {
     setSubmitError(null);
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: Record<string, unknown>) => {
     setSubmitError(null);
     try {
       if (selectedUser) {
-        await updateUser((selectedUser as any).id, data);
+        await updateUser((selectedUser as Record<string, unknown>).id as number, data);
         setSuccessMessage('User berhasil diperbarui');
       } else {
         await createUser(data);
         setSuccessMessage('User berhasil dibuat');
       }
       handleCloseForm();
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || 'Gagal menyimpan user';
-      setSubmitError(errorMessage);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error
+        ? (error as Record<string, unknown>).response as Record<string, unknown>
+        : null;
+      setSubmitError((errorMessage?.data as Record<string, unknown>)?.message as string || 'Gagal menyimpan user');
     }
   };
 
@@ -117,7 +116,7 @@ export default function Users() {
           <Heading size="2xl">Manajemen User</Heading>
           <Button
             colorScheme="teal"
-            onClick={() => handleOpenForm()}
+            onClick={() => handleOpenForm(null)}
           >
             {showForm ? 'Batal' : '+ Tambah User'}
           </Button>
