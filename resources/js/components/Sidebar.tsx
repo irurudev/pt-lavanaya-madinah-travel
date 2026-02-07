@@ -8,6 +8,7 @@ import {
   useBreakpointValue,
   IconButton,
   Link as ChakraLink,
+  Badge,
 } from '@chakra-ui/react';
 import { usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -25,6 +26,7 @@ import {
   FiArchive,
   FiLogOut,
   FiUsers,
+  FiUser,
 } from 'react-icons/fi';
 
 interface NavItem {
@@ -195,8 +197,64 @@ export function Sidebar() {
           </VStack>
         </Box>
 
-        {/* Collapse Toggle Button - Fixed at bottom */}
+        {/* Collapse Toggle Button & Logout - Fixed at bottom */}
         <Box p={4} borderTop="1px" borderColor="gray.200" flexShrink={0}>
+          {/* User Info */}
+          {user && (
+            <>
+              {!isCollapsed ? (
+                <Box 
+                  mb={3} 
+                  p={3} 
+                  bg="gray.50" 
+                  rounded="md" 
+                  borderWidth="1px" 
+                  borderColor="gray.200"
+                >
+                  <Text fontSize="xs" fontWeight="semibold" color="gray.700" mb={1} isTruncated>
+                    {(user?.email as string) || 'N/A'}
+                  </Text>
+                  <Badge 
+                    colorScheme={
+                      (user?.role as string) === 'admin' 
+                        ? 'purple' 
+                        : (user?.role as string) === 'operator' 
+                          ? 'blue' 
+                          : 'green'
+                    }
+                    fontSize="xs"
+                    textTransform="capitalize"
+                  >
+                    {(user?.role as string) || 'Unknown'}
+                  </Badge>
+                </Box>
+              ) : (
+                <Flex 
+                  mb={3} 
+                  justify="center" 
+                  align="center"
+                  bg="gray.50"
+                  rounded="md"
+                  p={2}
+                  borderWidth="1px"
+                  borderColor="gray.200"
+                >
+                  <Icon 
+                    as={FiUser} 
+                    color={
+                      (user?.role as string) === 'admin' 
+                        ? 'purple.500' 
+                        : (user?.role as string) === 'operator' 
+                          ? 'blue.500' 
+                          : 'green.500'
+                    }
+                    fontSize="20px"
+                  />
+                </Flex>
+              )}
+            </>
+          )}
+
           <Button
             w="full"
             size="sm"
