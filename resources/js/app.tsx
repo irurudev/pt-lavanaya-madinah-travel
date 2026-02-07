@@ -1,7 +1,9 @@
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
-import '../css/app.css';
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
+import { AppWrapper } from '@/components/AppWrapper';
+import './lib/axios'; // Import axios config untuk inisialisasi token authentication
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -11,7 +13,13 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<App {...props} />);
+        root.render(
+            <ChakraProvider value={defaultSystem}>
+                <AppWrapper>
+                    <App {...props} />
+                </AppWrapper>
+            </ChakraProvider>
+        );
     },
     progress: {
         color: '#4B5563',
