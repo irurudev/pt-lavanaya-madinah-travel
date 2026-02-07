@@ -12,8 +12,8 @@ interface TransactionFormProps {
   type: 'inbound' | 'outbound';
   onSuccess?: () => void;
   products?: Product[];
-  onCreateInbound?: (payload: CreateInboundTransactionPayload) => Promise<void>;
-  onCreateOutbound?: (payload: CreateOutboundTransactionPayload) => Promise<void>;
+  onCreateInbound?: (payload: CreateInboundTransactionPayload) => Promise<Transaction | Transaction[] | undefined>;
+  onCreateOutbound?: (payload: CreateOutboundTransactionPayload) => Promise<Transaction | Transaction[] | undefined>;
   isLoading?: boolean;
   apiError?: string | null;
 }

@@ -124,6 +124,7 @@ export default function TransactionReportPage() {
   const outboundReport = useOutboundReport();
   const [isExporting, setIsExporting] = useState(false);
   const [exportFormat, setExportFormat] = useState<'csv' | 'pdf'>('csv');
+  const [exportType, setExportType] = useState<'all' | 'in' | 'out'>('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -190,6 +191,26 @@ export default function TransactionReportPage() {
                 boxSizing: 'border-box',
               }}
             />
+          </Box>
+          <Box minW="120px">
+            <Text fontSize="sm" fontWeight="semibold" mb={2}>Tipe</Text>
+            <select
+              value={exportType}
+              onChange={(e) => setExportType(e.target.value as 'all' | 'in' | 'out')}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: '1px solid #e2e8f0',
+                fontSize: '14px',
+                width: '100%',
+                fontFamily: 'inherit',
+                boxSizing: 'border-box',
+              }}
+            >
+              <option value="all">Semua</option>
+              <option value="in">Masuk</option>
+              <option value="out">Keluar</option>
+            </select>
           </Box>
           <Box minW="120px">
             <Text fontSize="sm" fontWeight="semibold" mb={2}>Format</Text>

@@ -6,8 +6,8 @@ import type { Category, CreateCategoryPayload, UpdateCategoryPayload } from '@/t
 interface CategoryFormProps {
   onSuccess?: () => void;
   initialData?: Category;
-  onCreateCategory?: (payload: CreateCategoryPayload) => Promise<void>;
-  onUpdateCategory?: (id: number, payload: UpdateCategoryPayload) => Promise<void>;
+  onCreateCategory?: (payload: CreateCategoryPayload) => Promise<Category | Category[] | undefined>;
+  onUpdateCategory?: (id: number, payload: UpdateCategoryPayload) => Promise<Category | Category[] | undefined>;
   isLoading?: boolean;
   apiError?: string | null;
 }

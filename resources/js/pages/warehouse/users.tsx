@@ -17,6 +17,17 @@ import { UserForm } from '@/components/UserForm';
 import { useUsers } from '@/hooks/useUsers';
 import WarehouseLayout from '@/layouts/WarehouseLayout';
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  role_label: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export default function Users() {
   const {
     users,
@@ -29,7 +40,7 @@ export default function Users() {
   } = useUsers();
 
   const [showForm, setShowForm] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<Record<string, unknown> | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -41,7 +52,7 @@ export default function Users() {
     }
   }, [successMessage]);
 
-  const handleOpenForm = (userToEdit: Record<string, unknown> | null = null) => {
+  const handleOpenForm = (userToEdit: User | null = null) => {
     setSelectedUser(userToEdit);
     setShowForm(true);
   };
@@ -56,7 +67,7 @@ export default function Users() {
     setSubmitError(null);
     try {
       if (selectedUser) {
-        await updateUser((selectedUser as Record<string, unknown>).id as number, data);
+        await updateUser(selectedUser.id, data);
         setSuccessMessage('User berhasil diperbarui');
       } else {
         await createUser(data);
@@ -64,10 +75,10 @@ export default function Users() {
       }
       handleCloseForm();
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error && 'response' in error
+      const errorResponse = error instanceof Error && 'response' in error
         ? (error as Record<string, unknown>).response as Record<string, unknown>
         : null;
-      setSubmitError((errorMessage?.data as Record<string, unknown>)?.message as string || 'Gagal menyimpan user');
+      setSubmitError((errorResponse?.data as Record<string, unknown>)?.message as string || 'Gagal menyimpan user');
     }
   };
 
