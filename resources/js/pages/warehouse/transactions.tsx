@@ -13,6 +13,7 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { usePage } from '@inertiajs/react';
 import { FiTrash2 } from 'react-icons/fi';
 import { PaginationControls } from '@/components/PaginationControls';
 import { TransactionForm } from '@/components/TransactionForm';
@@ -27,6 +28,10 @@ import type { TransactionType } from '@/types/warehouse';
  * Menampilkan daftar transaksi dan form untuk membuat transaksi baru
  */
 export default function TransactionsPage() {
+  const { props } = usePage();
+  const user = (props.auth as Record<string, unknown>)?.user as Record<string, unknown> | undefined;
+  const isAdmin = (user?.role as string) === 'admin';
+
   const {
     transactions,
     loading,
@@ -245,15 +250,20 @@ export default function TransactionsPage() {
                       <Box as="td" p={3}>Rp {Number(tx.price_at_transaction).toLocaleString('id-ID')}</Box>
                       <Box as="td" p={3} fontSize="sm">{tx.user?.name}</Box>
                       <Box as="td" p={3} textAlign="right">
-                        <IconButton
-                          size="sm"
-                          variant="ghost"
-                          colorScheme="red"
-                          aria-label="Hapus transaksi"
-                          onClick={() => handleDelete(tx.id)}
-                        >
-                          <FiTrash2 />
-                        </IconButton>
+                        {/* Only admin can delete transactions - audit trail preservation */}
+                        {isAdmin ? (
+                          <IconButton
+                            size="sm"
+                            variant="ghost"
+                            colorScheme="red"
+                            aria-label="Hapus transaksi"
+                            onClick={() => handleDelete(tx.id)}
+                          >
+                            <FiTrash2 />
+                          </IconButton>
+                        ) : (
+                          <Text fontSize="sm" color="gray.500">No Action</Text>
+                        )}
                       </Box>
                     </Box>
                   ))}

@@ -26,19 +26,21 @@ class CategoryPolicy
     }
 
     /**
-     * Check apakah user bisa membuat category (hanya admin & operator)
+     * Check apakah user bisa membuat category (hanya admin)
+     * Kategori adalah master data - hanya admin yang bisa mengelola
      */
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->isOperator();
+        return $user->isAdmin();
     }
 
     /**
-     * Check apakah user bisa mengupdate category (hanya admin & operator)
+     * Check apakah user bisa mengupdate category (hanya admin)
+     * Kategori adalah master data - hanya admin yang bisa mengelola
      */
     public function update(User $user, Category $category): bool
     {
-        return $user->isAdmin() || $user->isOperator();
+        return $user->isAdmin();
     }
 
     /**

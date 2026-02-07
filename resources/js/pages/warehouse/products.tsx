@@ -12,6 +12,7 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { usePage } from '@inertiajs/react';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { PaginationControls } from '@/components/PaginationControls';
 import { ProductForm } from '@/components/ProductForm';
@@ -25,6 +26,10 @@ import type { Product } from '@/types/warehouse';
  * CRUD operations untuk master data produk
  */
 export default function ProductsPage() {
+  const { props } = usePage();
+  const user = (props.auth as Record<string, unknown>)?.user as Record<string, unknown> | undefined;
+  const isAdmin = (user?.role as string) === 'admin';
+
   const {
     products,
     loading,
@@ -187,15 +192,18 @@ export default function ProductsPage() {
                           >
                             <FiEdit2 />
                           </IconButton>
-                          <IconButton
-                            size="sm"
-                            variant="ghost"
-                            colorScheme="red"
-                            aria-label="Hapus produk"
-                            onClick={() => handleDelete(product.id)}
-                          >
-                            <FiTrash2 />
-                          </IconButton>
+                          {/* Only admin can delete products - historical data integrity */}
+                          {isAdmin && (
+                            <IconButton
+                              size="sm"
+                              variant="ghost"
+                              colorScheme="red"
+                              aria-label="Hapus produk"
+                              onClick={() => handleDelete(product.id)}
+                            >
+                              <FiTrash2 />
+                            </IconButton>
+                          )}
                         </Flex>
                       </Box>
                     </Box>

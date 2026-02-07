@@ -217,7 +217,7 @@ export function Sidebar() {
                   borderWidth="1px" 
                   borderColor="gray.200"
                 >
-                  <Text fontSize="xs" fontWeight="semibold" color="gray.700" mb={1} isTruncated>
+                  <Text fontSize="xs" fontWeight="semibold" color="gray.700" mb={1} truncate>
                     {(user?.email as string) || 'N/A'}
                   </Text>
                   <Badge 

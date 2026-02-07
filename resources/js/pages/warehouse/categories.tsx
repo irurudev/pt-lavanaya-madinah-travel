@@ -10,6 +10,7 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { usePage } from '@inertiajs/react';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { CategoryForm } from '@/components/CategoryForm';
 import { PaginationControls } from '@/components/PaginationControls';
@@ -22,6 +23,10 @@ import type { Category } from '@/types/warehouse';
  * CRUD operations untuk master data kategori
  */
 export default function CategoriesPage() {
+  const { props } = usePage();
+  const user = (props.auth as Record<string, unknown>)?.user as Record<string, unknown> | undefined;
+  const isAdmin = (user?.role as string) === 'admin';
+
   const {
     categories,
     loading,
@@ -61,15 +66,18 @@ export default function CategoriesPage() {
       <Stack gap={6}>
         <Flex justify="space-between" align="center">
           <Heading size="2xl">Kelola Kategori</Heading>
-          <Button
-            colorScheme="teal"
-            onClick={() => {
-              setSelectedCategory(null);
-              setShowForm(!showForm);
-            }}
-          >
-            {showForm ? 'Batal' : 'Tambah Kategori'}
-          </Button>
+          {/* Only admin can create/edit categories - master data control */}
+          {isAdmin && (
+            <Button
+              colorScheme="teal"
+              onClick={() => {
+                setSelectedCategory(null);
+                setShowForm(!showForm);
+              }}
+            >
+              {showForm ? 'Batal' : 'Tambah Kategori'}
+            </Button>
+          )}
         </Flex>
 
         {showForm && (
@@ -125,29 +133,33 @@ export default function CategoriesPage() {
                         {new Date(category.created_at).toLocaleDateString('id-ID')}
                       </Box>
                       <Box as="td" p={3} textAlign="right">
-                        <Flex gap={2} justify="flex-end">
-                          <IconButton
-                            size="sm"
-                            variant="ghost"
-                            colorScheme="blue"
-                            aria-label="Edit kategori"
-                            onClick={() => {
-                              setSelectedCategory(category);
-                              setShowForm(true);
-                            }}
-                          >
-                            <FiEdit2 />
-                          </IconButton>
-                          <IconButton
-                            size="sm"
-                            variant="ghost"
-                            colorScheme="red"
-                            aria-label="Hapus kategori"
-                            onClick={() => handleDelete(category.id)}
-                          >
-                            <FiTrash2 />
-                          </IconButton>
-                        </Flex>
+                        {isAdmin ? (
+                          <Flex gap={2} justify="flex-end">
+                            <IconButton
+                              size="sm"
+                              variant="ghost"
+                              colorScheme="blue"
+                              aria-label="Edit kategori"
+                              onClick={() => {
+                                setSelectedCategory(category);
+                                setShowForm(true);
+                              }}
+                            >
+                              <FiEdit2 />
+                            </IconButton>
+                            <IconButton
+                              size="sm"
+                              variant="ghost"
+                              colorScheme="red"
+                              aria-label="Hapus kategori"
+                              onClick={() => handleDelete(category.id)}
+                            >
+                              <FiTrash2 />
+                            </IconButton>
+                          </Flex>
+                        ) : (
+                          <Text fontSize="sm" color="gray.500">View Only</Text>
+                        )}
                       </Box>
                     </Box>
                   ))}
