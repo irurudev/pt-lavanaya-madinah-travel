@@ -1,5 +1,3 @@
-import { useState, FormEvent } from 'react';
-import { router } from '@inertiajs/react';
 import {
   Box,
   Button,
@@ -11,6 +9,9 @@ import {
   Heading,
   Grid,
 } from '@chakra-ui/react';
+import { router } from '@inertiajs/react';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
 import { FiUser, FiTool, FiEye } from 'react-icons/fi';
 
 interface DemoAccount {

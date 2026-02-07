@@ -10,12 +10,12 @@ import {
   Badge,
   IconButton,
 } from '@chakra-ui/react';
-import { FiEdit2, FiPlus } from 'react-icons/fi';
-import WarehouseLayout from '@/layouts/WarehouseLayout';
-import { useUsers } from '@/hooks/useUsers';
-import { UserForm } from '@/components/UserForm';
-import { PaginationControls } from '@/components/PaginationControls';
 import { useState, useEffect } from 'react';
+import { FiEdit2, FiPlus } from 'react-icons/fi';
+import { PaginationControls } from '@/components/PaginationControls';
+import { UserForm } from '@/components/UserForm';
+import { useUsers } from '@/hooks/useUsers';
+import WarehouseLayout from '@/layouts/WarehouseLayout';
 import type { User } from '@/types/warehouse';
 
 export default function Users() {

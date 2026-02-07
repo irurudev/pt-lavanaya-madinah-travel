@@ -5,8 +5,8 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select';
 import { useState, useEffect } from 'react';
+import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select';
 
 interface UserFormProps {
   user?: {

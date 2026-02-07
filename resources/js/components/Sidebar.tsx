@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { usePage, router } from '@inertiajs/react';
 import {
   Box,
   Flex,
@@ -11,6 +9,9 @@ import {
   IconButton,
   Link as ChakraLink,
 } from '@chakra-ui/react';
+import { usePage, router } from '@inertiajs/react';
+import { useState } from 'react';
+import type { ReactNode } from 'react';
 import {
   FiPackage,
   FiHome,
@@ -25,7 +26,6 @@ import {
   FiLogOut,
   FiUsers,
 } from 'react-icons/fi';
-import type { ReactNode } from 'react';
 
 interface NavItem {
   label: string;

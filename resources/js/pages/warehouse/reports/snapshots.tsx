@@ -12,9 +12,9 @@ import {
   Badge,
 } from '@chakra-ui/react';
 import { FiCalendar, FiPlusCircle, FiRefreshCcw } from 'react-icons/fi';
-import WarehouseLayout from '@/layouts/WarehouseLayout';
-import { useStockSnapshots } from '@/hooks/useSnapshot';
 import { PaginationControls } from '@/components/PaginationControls';
+import { useStockSnapshots } from '@/hooks/useSnapshot';
+import WarehouseLayout from '@/layouts/WarehouseLayout';
 
 /**
  * Halaman laporan snapshot stok per periode

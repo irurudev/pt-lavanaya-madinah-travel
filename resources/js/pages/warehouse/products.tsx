@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -12,12 +11,13 @@ import {
   Badge,
   IconButton,
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { FiEdit2, FiTrash2, FiSearch } from 'react-icons/fi';
-import WarehouseLayout from '@/layouts/WarehouseLayout';
-import { useProducts } from '@/hooks/useProducts';
-import { useCategories } from '@/hooks/useCategories';
-import { ProductForm } from '@/components/ProductForm';
 import { PaginationControls } from '@/components/PaginationControls';
+import { ProductForm } from '@/components/ProductForm';
+import { useCategories } from '@/hooks/useCategories';
+import { useProducts } from '@/hooks/useProducts';
+import WarehouseLayout from '@/layouts/WarehouseLayout';
 import type { Product } from '@/types/warehouse';
 
 /**

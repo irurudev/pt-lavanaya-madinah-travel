@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   Box,
   Grid,
@@ -9,9 +8,10 @@ import {
   Center,
   Stack,
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { FiPackage, FiLayers, FiTrendingUp, FiAlertTriangle } from 'react-icons/fi';
-import WarehouseLayout from '@/layouts/WarehouseLayout';
 import { useProducts } from '@/hooks/useProducts';
+import WarehouseLayout from '@/layouts/WarehouseLayout';
 import type { Product } from '@/types/warehouse';
 
 /**

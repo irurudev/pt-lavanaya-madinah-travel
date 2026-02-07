@@ -1,6 +1,6 @@
 import { Flex, Box, Container, Text } from '@chakra-ui/react';
-import { Sidebar } from '@/components/Sidebar';
 import type { PropsWithChildren } from 'react';
+import { Sidebar } from '@/components/Sidebar';
 
 /**
  * Layout utama untuk halaman warehouse
