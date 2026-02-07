@@ -58,44 +58,10 @@ export default function StockReportPage() {
           Posisi stok saat ini untuk tiap produk, termasuk nilai stok dan status stok rendah.
         </Text>
 
-        {/* Export Controls */}
-        <Flex gap={4} flexWrap="wrap" align="flex-end" bg="white" p={4} rounded="lg" shadow="sm">
-          <Box minW="120px">
-            <Text fontSize="sm" fontWeight="semibold" mb={2}>Format</Text>
-            <select
-              value={exportFormat}
-              onChange={(e) => setExportFormat(e.target.value as 'csv' | 'pdf')}
-              style={{
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #e2e8f0',
-                fontSize: '14px',
-                width: '100%',
-                fontFamily: 'inherit',
-              }}
-            >
-              <option value="csv">CSV</option>
-              <option value="pdf">PDF</option>
-            </select>
-          </Box>
-          <Button
-            colorScheme="teal"
-            onClick={handleExport}
-            loading={isExporting}
-            loadingText="Mengunduh..."
-            size="sm"
-            display="flex"
-            gap={2}
-            alignItems="center"
-          >
-            <FiDownload />
-            Export {exportFormat.toUpperCase()}
-          </Button>
-        </Flex>
-
-        {/* Summary Cards */}
+        {/* Summary Cards Row dengan Export Data */}
         {summary && (
-          <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={4}>
+          <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap={4}>
+            {/* Card 1: Total Produk */}
             <Card.Root bg="white" shadow="md">
               <Card.Body>
                 <Heading size="sm" color="gray.600" mb={2}>Total Produk</Heading>
@@ -103,6 +69,7 @@ export default function StockReportPage() {
               </Card.Body>
             </Card.Root>
 
+            {/* Card 2: Stok Rendah */}
             <Card.Root bg="white" shadow="md">
               <Card.Body>
                 <Heading size="sm" color="gray.600" mb={2}>Stok Rendah</Heading>
@@ -110,12 +77,48 @@ export default function StockReportPage() {
               </Card.Body>
             </Card.Root>
 
+            {/* Card 3: Total Nilai Stok */}
             <Card.Root bg="white" shadow="md">
               <Card.Body>
                 <Heading size="sm" color="gray.600" mb={2}>Total Nilai Stok</Heading>
                 <Heading size="lg" color="green.600">
                   Rp{Math.round(summary.total_stock_value).toLocaleString('id-ID')}
                 </Heading>
+              </Card.Body>
+            </Card.Root>
+
+            {/* Card 4: Export Data */}
+            <Card.Root bg="white" shadow="md">
+              <Card.Body>
+                <Heading size="sm" color="gray.600" mb={2}>Export Data</Heading>
+                <Stack gap={2} mt={2}>
+                  <select
+                    value={exportFormat}
+                    onChange={(e) => setExportFormat(e.target.value as 'csv' | 'pdf')}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid #e2e8f0',
+                      fontSize: '14px',
+                      width: '100%',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    <option value="csv">CSV</option>
+                    <option value="pdf">PDF</option>
+                  </select>
+                  <Button
+                    colorScheme="teal"
+                    onClick={handleExport}
+                    loading={isExporting}
+                    loadingText="Mengunduh..."
+                    size="sm"
+                    width="full"
+                  >
+                    <FiDownload style={{ marginRight: '8px' }} />
+                    Export
+                  </Button>
+                </Stack>
               </Card.Body>
             </Card.Root>
           </Grid>
