@@ -13,11 +13,10 @@ class StockSnapshotSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create snapshots untuk 3 bulan terakhir
+        // Generate snapshots untuk 2 bulan terakhir (excluding bulan sekarang)
         $months = [
             now()->subMonths(2)->format('Y-m'),
             now()->subMonth()->format('Y-m'),
-            now()->format('Y-m'),
         ];
 
         foreach ($months as $period) {

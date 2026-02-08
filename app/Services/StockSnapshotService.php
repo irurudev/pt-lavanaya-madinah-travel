@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Actions\CreateStockSnapshotAction;
+use App\Actions\ExportSnapshotReportAction;
 use App\DTOs\StockSnapshotDTO;
 use App\Models\StockSnapshot;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -12,22 +13,15 @@ class StockSnapshotService
 {
     public function __construct(
         protected CreateStockSnapshotAction $snapshotAction,
+        protected ExportSnapshotReportAction $exportAction,
     ) {}
 
     /**
      * Buat stock snapshot untuk periode tertentu
      */
-    public function createSnapshot(StockSnapshotDTO $dto): Collection
+    public function createSnapshot(StockSnapshotDTO $dto, bool $forceUpdate = false): Collection
     {
-        return $this->snapshotAction->execute($dto);
-    }
-
-    /**
-     * Buat snapshot untuk bulan sebelumnya
-     */
-    public function createPreviousMonthSnapshot(): Collection
-    {
-        return $this->snapshotAction->executeForPreviousMonth();
+        return $this->snapshotAction->execute($dto, $forceUpdate);
     }
 
     /**
@@ -82,5 +76,21 @@ class StockSnapshotService
             ),
             'average_stock' => $snapshots->avg('closing_stock'),
         ];
+    }
+
+    /**
+     * Export snapshot report ke CSV
+     */
+    public function exportCSV(string $period): string
+    {
+        return $this->exportAction->executeCSV($period);
+    }
+
+    /**
+     * Export snapshot report ke PDF
+     */
+    public function exportPDF(string $period): string
+    {
+        return $this->exportAction->executePDF($period);
     }
 }

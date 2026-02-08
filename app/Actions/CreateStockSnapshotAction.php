@@ -12,15 +12,21 @@ class CreateStockSnapshotAction
     /**
      * Buat stock snapshot untuk produk pada periode tertentu
      * Jika tidak ada period, gunakan periode bulan sekarang
+     * Jika forceUpdate true, hapus snapshot lama dan buat yang baru
      */
-    public function execute(StockSnapshotDTO $dto): Collection
+    public function execute(StockSnapshotDTO $dto, bool $forceUpdate = false): Collection
     {
         $period = $dto->period ?? now()->format('Y-m');
 
         // Cek apakah snapshot untuk periode ini sudah ada
         $existingCount = StockSnapshot::where('period', $period)->count();
         if ($existingCount > 0) {
-            throw new \Exception("Snapshot untuk periode {$period} sudah ada");
+            if (!$forceUpdate) {
+                throw new \Exception("Snapshot untuk periode {$period} sudah ada. Apakah Anda ingin memperbarui data snapshot tersebut?");
+            }
+            
+            // Hapus snapshot lama jika force update
+            StockSnapshot::where('period', $period)->delete();
         }
 
         $products = Product::all();
@@ -41,26 +47,26 @@ class CreateStockSnapshotAction
     }
 
     /**
-     * Buat snapshot untuk bulan terakhir (previous month)
-     */
-    public function executeForPreviousMonth(): Collection
-    {
-        $previousMonth = now()->subMonth()->format('Y-m');
-        return $this->execute(new StockSnapshotDTO($previousMonth));
-    }
-
-    /**
-     * Get list periode snapshots yang sudah ada
+     * Get list periode snapshots yang sudah ada di database + periode bulan sekarang
+     * User hanya bisa membuat snapshot untuk bulan sekarang (stok diambil dari kondisi saat ini)
      */
     public function getExistingPeriods(): array
     {
-        return array_values(
-            StockSnapshot::distinct()
-                ->pluck('period')
-                ->sort()
-                ->reverse()
-                ->toArray()
-        );
+        // Ambil periode yang sudah ada di database
+        $existingPeriods = StockSnapshot::distinct()
+            ->pluck('period')
+            ->toArray();
+
+        // Tambahkan periode bulan sekarang
+        $currentPeriod = now()->format('Y-m');
+        if (!in_array($currentPeriod, $existingPeriods)) {
+            $existingPeriods[] = $currentPeriod;
+        }
+
+        // Sort descending
+        rsort($existingPeriods);
+
+        return array_values($existingPeriods);
     }
 
     /**

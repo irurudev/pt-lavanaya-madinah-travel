@@ -29,14 +29,23 @@ export async function getStockReport(page = 1, perPage = 10): Promise<{
 /**
  * Mendapatkan laporan transaksi (masuk & keluar)
  */
-export async function getTransactionReport(page = 1, perPage = 10): Promise<{
+export async function getTransactionReport(
+  page = 1, 
+  perPage = 10, 
+  startDate?: string, 
+  endDate?: string,
+  type?: 'in' | 'out'
+): Promise<{
   data: TransactionReportItem[];
   pagination: TransactionReportPagination;
   summary: TransactionReportSummary;
 }> {
-  const { data } = await axios.get('/reports/transactions', {
-    params: { page, per_page: perPage },
-  });
+  const params: Record<string, unknown> = { page, per_page: perPage };
+  if (startDate) params.start_date = startDate;
+  if (endDate) params.end_date = endDate;
+  if (type) params.type = type;
+
+  const { data } = await axios.get('/reports/transactions', { params });
   return {
     data: data.data,
     pagination: data.pagination,
@@ -47,13 +56,20 @@ export async function getTransactionReport(page = 1, perPage = 10): Promise<{
 /**
  * Mendapatkan laporan transaksi masuk (inbound)
  */
-export async function getInboundReport(page = 1, perPage = 10): Promise<{
+export async function getInboundReport(
+  page = 1, 
+  perPage = 10, 
+  startDate?: string, 
+  endDate?: string
+): Promise<{
   data: TransactionReportItem[];
   pagination: TransactionReportPagination;
 }> {
-  const { data } = await axios.get('/reports/inbound', {
-    params: { page, per_page: perPage },
-  });
+  const params: Record<string, unknown> = { page, per_page: perPage };
+  if (startDate) params.start_date = startDate;
+  if (endDate) params.end_date = endDate;
+
+  const { data } = await axios.get('/reports/inbound', { params });
   return {
     data: data.data,
     pagination: data.pagination,
@@ -63,13 +79,20 @@ export async function getInboundReport(page = 1, perPage = 10): Promise<{
 /**
  * Mendapatkan laporan transaksi keluar (outbound)
  */
-export async function getOutboundReport(page = 1, perPage = 10): Promise<{
+export async function getOutboundReport(
+  page = 1, 
+  perPage = 10, 
+  startDate?: string, 
+  endDate?: string
+): Promise<{
   data: TransactionReportItem[];
   pagination: TransactionReportPagination;
 }> {
-  const { data } = await axios.get('/reports/outbound', {
-    params: { page, per_page: perPage },
-  });
+  const params: Record<string, unknown> = { page, per_page: perPage };
+  if (startDate) params.start_date = startDate;
+  if (endDate) params.end_date = endDate;
+
+  const { data } = await axios.get('/reports/outbound', { params });
   return {
     data: data.data,
     pagination: data.pagination,

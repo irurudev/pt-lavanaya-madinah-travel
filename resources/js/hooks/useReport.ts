@@ -56,20 +56,27 @@ export function useStockReport() {
 /**
  * Hook untuk mengelola laporan transaksi (masuk & keluar)
  */
-export function useTransactionReport() {
+export function useTransactionReport(filters?: { startDate?: string; endDate?: string; type?: 'in' | 'out' }) {
   const [items, setItems] = useState<TransactionReportItem[]>([]);
   const [pagination, setPagination] = useState<TransactionReportPagination | null>(null);
   const [summary, setSummary] = useState<TransactionReportSummary | null>(null);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [appliedFilters, setAppliedFilters] = useState(filters);
   const perPage = 10;
 
-  const fetchReport = useCallback(async (targetPage = 1) => {
+  const fetchReport = useCallback(async (targetPage = 1, currentFilters = appliedFilters) => {
     try {
       setLoading(true);
       setError(null);
-      const result = await reportApi.getTransactionReport(targetPage, perPage);
+      const result = await reportApi.getTransactionReport(
+        targetPage,
+        perPage,
+        currentFilters?.startDate,
+        currentFilters?.endDate,
+        currentFilters?.type
+      );
       setItems(result.data);
       setPagination(result.pagination);
       setSummary(result.summary);
@@ -79,7 +86,13 @@ export function useTransactionReport() {
     } finally {
       setLoading(false);
     }
-  }, [perPage]);
+  }, [perPage, appliedFilters]);
+
+  const applyFilters = useCallback((newFilters: { startDate?: string; endDate?: string; type?: 'in' | 'out' }) => {
+    setAppliedFilters(newFilters);
+    setPage(1);
+    fetchReport(1, newFilters);
+  }, [fetchReport]);
 
   useEffect(() => {
     fetchReport(page);
@@ -93,6 +106,8 @@ export function useTransactionReport() {
     setPage,
     loading,
     error,
+    appliedFilters,
+    applyFilters,
     refetch: () => fetchReport(page),
   };
 }
@@ -100,19 +115,25 @@ export function useTransactionReport() {
 /**
  * Hook untuk mengelola laporan transaksi masuk (inbound)
  */
-export function useInboundReport() {
+export function useInboundReport(filters?: { startDate?: string; endDate?: string }) {
   const [items, setItems] = useState<TransactionReportItem[]>([]);
   const [pagination, setPagination] = useState<TransactionReportPagination | null>(null);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [appliedFilters, setAppliedFilters] = useState(filters);
   const perPage = 10;
 
-  const fetchReport = useCallback(async (targetPage = 1) => {
+  const fetchReport = useCallback(async (targetPage = 1, currentFilters = appliedFilters) => {
     try {
       setLoading(true);
       setError(null);
-      const result = await reportApi.getInboundReport(targetPage, perPage);
+      const result = await reportApi.getInboundReport(
+        targetPage,
+        perPage,
+        currentFilters?.startDate,
+        currentFilters?.endDate
+      );
       setItems(result.data);
       setPagination(result.pagination);
       setPage(result.pagination.current_page);
@@ -121,7 +142,13 @@ export function useInboundReport() {
     } finally {
       setLoading(false);
     }
-  }, [perPage]);
+  }, [perPage, appliedFilters]);
+
+  const applyFilters = useCallback((newFilters: { startDate?: string; endDate?: string }) => {
+    setAppliedFilters(newFilters);
+    setPage(1);
+    fetchReport(1, newFilters);
+  }, [fetchReport]);
 
   useEffect(() => {
     fetchReport(page);
@@ -134,6 +161,8 @@ export function useInboundReport() {
     setPage,
     loading,
     error,
+    appliedFilters,
+    applyFilters,
     refetch: () => fetchReport(page),
   };
 }
@@ -141,19 +170,25 @@ export function useInboundReport() {
 /**
  * Hook untuk mengelola laporan transaksi keluar (outbound)
  */
-export function useOutboundReport() {
+export function useOutboundReport(filters?: { startDate?: string; endDate?: string }) {
   const [items, setItems] = useState<TransactionReportItem[]>([]);
   const [pagination, setPagination] = useState<TransactionReportPagination | null>(null);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [appliedFilters, setAppliedFilters] = useState(filters);
   const perPage = 10;
 
-  const fetchReport = useCallback(async (targetPage = 1) => {
+  const fetchReport = useCallback(async (targetPage = 1, currentFilters = appliedFilters) => {
     try {
       setLoading(true);
       setError(null);
-      const result = await reportApi.getOutboundReport(targetPage, perPage);
+      const result = await reportApi.getOutboundReport(
+        targetPage,
+        perPage,
+        currentFilters?.startDate,
+        currentFilters?.endDate
+      );
       setItems(result.data);
       setPagination(result.pagination);
       setPage(result.pagination.current_page);
@@ -162,7 +197,13 @@ export function useOutboundReport() {
     } finally {
       setLoading(false);
     }
-  }, [perPage]);
+  }, [perPage, appliedFilters]);
+
+  const applyFilters = useCallback((newFilters: { startDate?: string; endDate?: string }) => {
+    setAppliedFilters(newFilters);
+    setPage(1);
+    fetchReport(1, newFilters);
+  }, [fetchReport]);
 
   useEffect(() => {
     fetchReport(page);
@@ -175,6 +216,8 @@ export function useOutboundReport() {
     setPage,
     loading,
     error,
+    appliedFilters,
+    applyFilters,
     refetch: () => fetchReport(page),
   };
 }

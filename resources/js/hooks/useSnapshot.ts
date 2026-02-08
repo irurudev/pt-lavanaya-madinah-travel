@@ -48,12 +48,12 @@ export function useStockSnapshots() {
     }
   }, [perPage]);
 
-  const createSnapshot = async (period?: string) => {
+  const createSnapshot = async (period?: string, forceUpdate = false) => {
     try {
       setIsCreating(true);
       setError(null); // Clear error sebelum mencoba create
       const targetPeriod = period ?? selectedPeriod;
-      await snapshotApi.createSnapshot(targetPeriod || undefined);
+      await snapshotApi.createSnapshot(targetPeriod || undefined, forceUpdate);
       await loadPeriods();
       if (targetPeriod) {
         setSelectedPeriod(targetPeriod);
@@ -64,24 +64,11 @@ export function useStockSnapshots() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Gagal membuat snapshot';
       setError(errorMessage);
-      // Auto clear error setelah 5 detik
-      setTimeout(() => setError(null), 5000);
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  const createPreviousMonthSnapshot = async () => {
-    try {
-      setIsCreating(true);
-      setError(null); // Clear error sebelum mencoba create
-      await snapshotApi.createPreviousMonthSnapshot();
-      await loadPeriods();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Gagal membuat snapshot bulan sebelumnya';
-      setError(errorMessage);
-      // Auto clear error setelah 5 detik
-      setTimeout(() => setError(null), 5000);
+      // Jangan auto clear error jika ada konfirmasi
+      if (!errorMessage.includes('sudah ada')) {
+        setTimeout(() => setError(null), 5000);
+      }
+      throw err; // Re-throw untuk ditangani di komponen
     } finally {
       setIsCreating(false);
     }
@@ -111,6 +98,5 @@ export function useStockSnapshots() {
     error,
     refresh: () => selectedPeriod && loadSnapshots(selectedPeriod, page),
     createSnapshot,
-    createPreviousMonthSnapshot,
   };
 }

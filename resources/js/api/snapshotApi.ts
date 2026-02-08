@@ -34,25 +34,13 @@ export async function getSnapshotsByPeriod(
 /**
  * Membuat snapshot untuk periode tertentu
  */
-export async function createSnapshot(period?: string): Promise<StockSnapshotItem[]> {
-  const payload = period ? { period } : {};
+export async function createSnapshot(period?: string, forceUpdate = false): Promise<StockSnapshotItem[]> {
+  const payload = { 
+    ...(period ? { period } : {}),
+    force_update: forceUpdate,
+  };
   try {
     const { data } = await axios.post('/snapshots', payload);
-    return data.data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw error;
-  }
-}
-
-/**
- * Membuat snapshot untuk bulan sebelumnya
- */
-export async function createPreviousMonthSnapshot(): Promise<StockSnapshotItem[]> {
-  try {
-    const { data } = await axios.post('/snapshots/previous-month');
     return data.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {

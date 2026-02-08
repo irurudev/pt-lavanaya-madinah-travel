@@ -22,25 +22,25 @@ class ReportService
     /**
      * Mendapatkan laporan transaksi (masuk & keluar)
      */
-    public function getTransactionReport(?string $type = null, ?int $perPage = 10): LengthAwarePaginator
+    public function getTransactionReport(?string $type = null, ?int $perPage = 10, ?string $startDate = null, ?string $endDate = null): LengthAwarePaginator
     {
-        return $this->reportRepository->getTransactionReport($type, $perPage);
+        return $this->reportRepository->getTransactionReport($type, $perPage, $startDate, $endDate);
     }
 
     /**
      * Mendapatkan laporan transaksi masuk
      */
-    public function getInboundReport(?int $perPage = 10): LengthAwarePaginator
+    public function getInboundReport(?int $perPage = 10, ?string $startDate = null, ?string $endDate = null): LengthAwarePaginator
     {
-        return $this->reportRepository->getInboundReport($perPage);
+        return $this->reportRepository->getInboundReport($perPage, $startDate, $endDate);
     }
 
     /**
      * Mendapatkan laporan transaksi keluar
      */
-    public function getOutboundReport(?int $perPage = 10): LengthAwarePaginator
+    public function getOutboundReport(?int $perPage = 10, ?string $startDate = null, ?string $endDate = null): LengthAwarePaginator
     {
-        return $this->reportRepository->getOutboundReport($perPage);
+        return $this->reportRepository->getOutboundReport($perPage, $startDate, $endDate);
     }
 
     /**
@@ -54,8 +54,8 @@ class ReportService
     /**
      * Mendapatkan ringkasan transaksi
      */
-    public function getTransactionSummary(): array
+    public function getTransactionSummary(?string $startDate = null, ?string $endDate = null): array
     {
-        return $this->reportRepository->getTransactionSummary();
+        return $this->reportRepository->getTransactionSummary($startDate, $endDate);
     }
 }

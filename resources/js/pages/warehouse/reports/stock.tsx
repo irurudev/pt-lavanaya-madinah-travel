@@ -9,8 +9,6 @@ import {
   Text,
   Input,
   Badge,
-  Grid,
-  Card,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiDownload, FiSearch } from 'react-icons/fi';
@@ -24,26 +22,28 @@ import WarehouseLayout from '@/layouts/WarehouseLayout';
  * Menampilkan ringkasan dan detail stok semua produk
  */
 export default function StockReportPage() {
-  const { items, summary, pagination, setPage, loading, error } = useStockReport();
+  const { items, pagination, setPage, loading, error } = useStockReport();
   const [searchQuery, setSearchQuery] = useState('');
   const [isExporting, setIsExporting] = useState(false);
-  const [exportFormat, setExportFormat] = useState<'csv' | 'pdf'>('csv');
+  const [currentFormat, setCurrentFormat] = useState<'csv' | 'pdf' | null>(null);
 
   const filteredItems = items.filter((item) =>
     `${item.sku} ${item.name} ${item.category?.name || ''}`.toLowerCase()
       .includes(searchQuery.toLowerCase()),
   );
 
-  const handleExport = async () => {
+  const handleExport = async (format: 'csv' | 'pdf') => {
     try {
       setIsExporting(true);
-      await reportApi.downloadStockReport(exportFormat);
+      setCurrentFormat(format);
+      await reportApi.downloadStockReport(format);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Gagal mengunduh laporan stok';
       console.error(errorMsg);
       alert(errorMsg);
     } finally {
       setIsExporting(false);
+      setCurrentFormat(null);
     }
   };
 
@@ -58,72 +58,6 @@ export default function StockReportPage() {
           Posisi stok saat ini untuk tiap produk, termasuk nilai stok dan status stok rendah.
         </Text>
 
-        {/* Summary Cards Row dengan Export Data */}
-        {summary && (
-          <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap={4}>
-            {/* Card 1: Total Produk */}
-            <Card.Root bg="white" shadow="md">
-              <Card.Body>
-                <Heading size="sm" color="gray.600" mb={2}>Total Produk</Heading>
-                <Heading size="2xl" color="teal.600">{summary.total_products}</Heading>
-              </Card.Body>
-            </Card.Root>
-
-            {/* Card 2: Stok Rendah */}
-            <Card.Root bg="white" shadow="md">
-              <Card.Body>
-                <Heading size="sm" color="gray.600" mb={2}>Stok Rendah</Heading>
-                <Heading size="2xl" color="red.600">{summary.low_stock_count}</Heading>
-              </Card.Body>
-            </Card.Root>
-
-            {/* Card 3: Total Nilai Stok */}
-            <Card.Root bg="white" shadow="md">
-              <Card.Body>
-                <Heading size="sm" color="gray.600" mb={2}>Total Nilai Stok</Heading>
-                <Heading size="lg" color="green.600">
-                  Rp{Math.round(summary.total_stock_value).toLocaleString('id-ID')}
-                </Heading>
-              </Card.Body>
-            </Card.Root>
-
-            {/* Card 4: Export Data */}
-            <Card.Root bg="white" shadow="md">
-              <Card.Body>
-                <Heading size="sm" color="gray.600" mb={2}>Export Data</Heading>
-                <Stack gap={2} mt={2}>
-                  <select
-                    value={exportFormat}
-                    onChange={(e) => setExportFormat(e.target.value as 'csv' | 'pdf')}
-                    style={{
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid #e2e8f0',
-                      fontSize: '14px',
-                      width: '100%',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    <option value="csv">CSV</option>
-                    <option value="pdf">PDF</option>
-                  </select>
-                  <Button
-                    colorScheme="teal"
-                    onClick={handleExport}
-                    loading={isExporting}
-                    loadingText="Mengunduh..."
-                    size="sm"
-                    width="full"
-                  >
-                    <FiDownload style={{ marginRight: '8px' }} />
-                    Export
-                  </Button>
-                </Stack>
-              </Card.Body>
-            </Card.Root>
-          </Grid>
-        )}
-
         {/* Error Message */}
         {error && (
           <Box bg="red.50" border="1px" borderColor="red.200" p={4} rounded="md">
@@ -131,26 +65,55 @@ export default function StockReportPage() {
           </Box>
         )}
 
-        {/* Search */}
-        <Box position="relative">
-          <Input
-            placeholder="Cari produk (SKU, nama, kategori)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            size="lg"
-            paddingLeft="40px"
-          />
-          <FiSearch 
-            style={{
-              position: 'absolute',
-              left: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: '#cbd5e0',
-              pointerEvents: 'none',
-            }}
-          />
-        </Box>
+        {/* Search & Export Row */}
+        <Flex gap={4} flexWrap="wrap" align="flex-end" bg="white" p={4} rounded="lg" shadow="sm">
+          <Box flex={1} minW="300px" position="relative">
+            <Text fontSize="sm" fontWeight="semibold" mb={2}>Cari Produk</Text>
+            <Input
+              placeholder="SKU, nama, atau kategori..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              paddingLeft="40px"
+            />
+            <FiSearch 
+              style={{
+                position: 'absolute',
+                left: '12px',
+                bottom: '12px',
+                color: '#cbd5e0',
+                pointerEvents: 'none',
+              }}
+            />
+          </Box>
+          <Flex gap={2}>
+            <Button
+              variant="outline"
+              colorScheme="blue"
+              onClick={() => handleExport('csv')}
+              loading={isExporting && currentFormat === 'csv'}
+              size="sm"
+              display="flex"
+              gap={2}
+              alignItems="center"
+            >
+              <FiDownload />
+              CSV
+            </Button>
+            <Button
+              variant="outline"
+              colorScheme="red"
+              onClick={() => handleExport('pdf')}
+              loading={isExporting && currentFormat === 'pdf'}
+              size="sm"
+              display="flex"
+              gap={2}
+              alignItems="center"
+            >
+              <FiDownload />
+              PDF
+            </Button>
+          </Flex>
+        </Flex>
 
         {/* Loading */}
         {loading ? (
@@ -183,7 +146,14 @@ export default function StockReportPage() {
                 </Box>
                 <Box as="tbody">
                   {filteredItems.map((item, index) => (
-                    <Box as="tr" key={item.id} borderBottom="1px" borderColor="gray.100">
+                    <Box 
+                      as="tr" 
+                      key={item.id} 
+                      borderBottom="1px" 
+                      borderColor="gray.100"
+                      bg={item.is_low_stock ? 'red.50' : 'transparent'}
+                      _hover={{ bg: item.is_low_stock ? 'red.100' : 'gray.50' }}
+                    >
                       <Box as="td" p={3} fontWeight="semibold">
                         {((pagination?.current_page || 1) - 1) * (pagination?.per_page || 10) + (index + 1)}
                       </Box>

@@ -44,6 +44,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('snapshots', [SnapshotController::class, 'index']);
     Route::get('snapshots/periods', [SnapshotController::class, 'periods']);
     Route::get('snapshots/period/{period}', [SnapshotController::class, 'byPeriod']);
+    Route::get('snapshots/export/{period}', [SnapshotController::class, 'export']);
     Route::post('snapshots', [SnapshotController::class, 'store']);
-    Route::post('snapshots/previous-month', [SnapshotController::class, 'createPreviousMonth']);
 });

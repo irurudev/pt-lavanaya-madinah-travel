@@ -53,9 +53,12 @@ class ReportController extends Controller
     {
         $perPage = (int) $request->query('per_page', 10);
         $perPage = $perPage > 0 ? $perPage : 10;
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $type = $request->query('type'); // 'in', 'out', atau null
 
-        $transactionReport = $this->reportService->getTransactionReport(null, $perPage);
-        $summary = $this->reportService->getTransactionSummary();
+        $transactionReport = $this->reportService->getTransactionReport($type, $perPage, $startDate, $endDate);
+        $summary = $this->reportService->getTransactionSummary($startDate, $endDate);
 
         return response()->json([
             'success' => true,
@@ -78,8 +81,10 @@ class ReportController extends Controller
     {
         $perPage = (int) $request->query('per_page', 10);
         $perPage = $perPage > 0 ? $perPage : 10;
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
-        $transactionReport = $this->reportService->getInboundReport($perPage);
+        $transactionReport = $this->reportService->getInboundReport($perPage, $startDate, $endDate);
 
         return response()->json([
             'success' => true,
@@ -101,8 +106,10 @@ class ReportController extends Controller
     {
         $perPage = (int) $request->query('per_page', 10);
         $perPage = $perPage > 0 ? $perPage : 10;
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
-        $transactionReport = $this->reportService->getOutboundReport($perPage);
+        $transactionReport = $this->reportService->getOutboundReport($perPage, $startDate, $endDate);
 
         return response()->json([
             'success' => true,

@@ -42,10 +42,8 @@ class TransactionSeeder extends Seeder
             Carbon::create(2026, 1, 12, 16, 15, 0),
             Carbon::create(2026, 1, 16, 11, 35, 0),
             Carbon::create(2026, 1, 20, 15, 5, 0),
-            Carbon::create(2026, 2, 3, 9, 10, 0),
-            Carbon::create(2026, 2, 7, 13, 45, 0),
-            Carbon::create(2026, 2, 12, 10, 30, 0),
-            Carbon::create(2026, 2, 20, 16, 0, 0),
+            Carbon::create(2026, 1, 25, 9, 10, 0),
+            Carbon::create(2026, 1, 28, 13, 45, 0),
         ];
 
         foreach ($dates as $index => $date) {

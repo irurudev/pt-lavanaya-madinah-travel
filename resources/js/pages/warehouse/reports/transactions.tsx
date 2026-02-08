@@ -8,12 +8,10 @@ import {
   Center,
   Text,
   Badge,
-  Grid,
-  Card,
   Tabs,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FiDownload } from 'react-icons/fi';
+import { FiDownload, FiFilter } from 'react-icons/fi';
 import * as reportApi from '@/api/reportApi';
 import { PaginationControls } from '@/components/PaginationControls';
 import { useTransactionReport, useInboundReport, useOutboundReport } from '@/hooks/useReport';
@@ -119,29 +117,49 @@ function TransactionReportTable({
  * Halaman laporan transaksi masuk & keluar
  */
 export default function TransactionReportPage() {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'in' | 'out'>('all');
+  const [isExporting, setIsExporting] = useState(false);
+  const [currentFormat, setCurrentFormat] = useState<'csv' | 'pdf' | null>(null);
+
   const transactionReport = useTransactionReport();
   const inboundReport = useInboundReport();
   const outboundReport = useOutboundReport();
-  const [isExporting, setIsExporting] = useState(false);
-  const [exportFormat, setExportFormat] = useState<'csv' | 'pdf'>('csv');
-  const [exportType, setExportType] = useState<'all' | 'in' | 'out'>('all');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
 
-  const handleExport = async () => {
+  const handleFilter = () => {
+    const filters = {
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+      type: filterType !== 'all' ? (filterType === 'in' ? 'in' : 'out') as 'in' | 'out' : undefined,
+    };
+
+    transactionReport.applyFilters(filters);
+    inboundReport.applyFilters({ startDate: startDate || undefined, endDate: endDate || undefined });
+    outboundReport.applyFilters({ startDate: startDate || undefined, endDate: endDate || undefined });
+  };
+
+  const handleExport = async (format: 'csv' | 'pdf') => {
     try {
       setIsExporting(true);
-      if (exportType === 'all') {
-        await reportApi.downloadTransactionReport(undefined, exportFormat, startDate || undefined, endDate || undefined);
-      } else {
-        await reportApi.downloadTransactionReport(exportType === 'in' ? 'in' : 'out', exportFormat, startDate || undefined, endDate || undefined);
-      }
+      setCurrentFormat(format);
+      const appliedStartDate = transactionReport.appliedFilters?.startDate || undefined;
+      const appliedEndDate = transactionReport.appliedFilters?.endDate || undefined;
+      const appliedType = transactionReport.appliedFilters?.type || undefined;
+      
+      await reportApi.downloadTransactionReport(
+        appliedType,
+        format,
+        appliedStartDate,
+        appliedEndDate
+      );
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Gagal mengunduh laporan transaksi';
       console.error(errorMsg);
       alert(errorMsg);
     } finally {
       setIsExporting(false);
+      setCurrentFormat(null);
     }
   };
 
@@ -156,7 +174,7 @@ export default function TransactionReportPage() {
           Riwayat pergerakan stok (masuk dan keluar) pada rentang tanggal yang dipilih.
         </Text>
 
-        {/* Export Controls */}
+        {/* Row 1: Filter Controls */}
         <Flex gap={4} flexWrap="wrap" align="flex-end" bg="white" p={4} rounded="lg" shadow="sm">
           <Box flex={1} minW="200px">
             <Text fontSize="sm" fontWeight="semibold" mb={2}>Dari Tanggal</Text>
@@ -195,8 +213,8 @@ export default function TransactionReportPage() {
           <Box minW="120px">
             <Text fontSize="sm" fontWeight="semibold" mb={2}>Tipe</Text>
             <select
-              value={exportType}
-              onChange={(e) => setExportType(e.target.value as 'all' | 'in' | 'out')}
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value as 'all' | 'in' | 'out')}
               style={{
                 padding: '8px 12px',
                 borderRadius: '6px',
@@ -212,62 +230,74 @@ export default function TransactionReportPage() {
               <option value="out">Keluar</option>
             </select>
           </Box>
-          <Box minW="120px">
-            <Text fontSize="sm" fontWeight="semibold" mb={2}>Format</Text>
-            <select
-              value={exportFormat}
-              onChange={(e) => setExportFormat(e.target.value as 'csv' | 'pdf')}
-              style={{
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #e2e8f0',
-                fontSize: '14px',
-                width: '100%',
-                fontFamily: 'inherit',
-                boxSizing: 'border-box',
-              }}
-            >
-              <option value="csv">CSV</option>
-              <option value="pdf">PDF</option>
-            </select>
-          </Box>
           <Button
             colorScheme="teal"
-            onClick={handleExport}
-            loading={isExporting}
-            loadingText="Mengunduh..."
+            onClick={handleFilter}
             size="sm"
             display="flex"
             gap={2}
             alignItems="center"
           >
-            <FiDownload />
-            Export {exportFormat.toUpperCase()}
+            <FiFilter />
+            Filter
           </Button>
         </Flex>
 
-        {/* Summary Cards */}
-        {transactionReport.summary && (
-          <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
-            <Card.Root bg="white" shadow="md">
-              <Card.Body>
-                <Heading size="sm" color="gray.600" mb={2}>Total Barang Masuk</Heading>
-                <Heading size="2xl" color="green.600">
+        {/* Row 2: Summary dan Export */}
+        <Flex gap={4} flexWrap="wrap" align="center" bg="white" p={4} rounded="lg" shadow="sm">
+          {/* Total Barang Masuk */}
+          {transactionReport.summary && (
+            <>
+              <Box>
+                <Text fontSize="sm" color="gray.600" mb={1}>Total Barang Masuk</Text>
+                <Heading size="xl" color="green.600">
                   {transactionReport.summary.inbound_total} unit
                 </Heading>
-              </Card.Body>
-            </Card.Root>
+              </Box>
 
-            <Card.Root bg="white" shadow="md">
-              <Card.Body>
-                <Heading size="sm" color="gray.600" mb={2}>Total Barang Keluar</Heading>
-                <Heading size="2xl" color="red.600">
+              {/* Divider */}
+              <Box height="40px" width="1px" bg="gray.300" />
+
+              {/* Total Barang Keluar */}
+              <Box>
+                <Text fontSize="sm" color="gray.600" mb={1}>Total Barang Keluar</Text>
+                <Heading size="xl" color="red.600">
                   {transactionReport.summary.outbound_total} unit
                 </Heading>
-              </Card.Body>
-            </Card.Root>
-          </Grid>
-        )}
+              </Box>
+            </>
+          )}
+
+          {/* Export Buttons */}
+          <Flex gap={2} ml="auto">
+            <Button
+              variant="outline"
+              colorScheme="blue"
+              onClick={() => handleExport('csv')}
+              loading={isExporting && currentFormat === 'csv'}
+              size="sm"
+              display="flex"
+              gap={2}
+              alignItems="center"
+            >
+              <FiDownload />
+              CSV
+            </Button>
+            <Button
+              variant="outline"
+              colorScheme="red"
+              onClick={() => handleExport('pdf')}
+              loading={isExporting && currentFormat === 'pdf'}
+              size="sm"
+              display="flex"
+              gap={2}
+              alignItems="center"
+            >
+              <FiDownload />
+              PDF
+            </Button>
+          </Flex>
+        </Flex>
 
         {/* Tabs */}
         <Tabs.Root defaultValue="all">

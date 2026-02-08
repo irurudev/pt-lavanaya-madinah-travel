@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Box,
   Button,
@@ -11,7 +12,7 @@ import {
   Card,
   Badge,
 } from '@chakra-ui/react';
-import { FiCalendar, FiPlusCircle } from 'react-icons/fi';
+import { FiPlusCircle, FiDownload } from 'react-icons/fi';
 import { PaginationControls } from '@/components/PaginationControls';
 import { useStockSnapshots } from '@/hooks/useSnapshot';
 import WarehouseLayout from '@/layouts/WarehouseLayout';
@@ -39,8 +40,29 @@ export default function StockSnapshotPage() {
     isCreating,
     error,
     createSnapshot,
-    createPreviousMonthSnapshot,
   } = useStockSnapshots();
+
+  const handleCreateSnapshot = async () => {
+    try {
+      await createSnapshot(selectedPeriod || undefined, false);
+    } catch (err) {
+      // Jika error berisi "sudah ada", tampilkan konfirmasi
+      const errorMessage = err instanceof Error ? err.message : '';
+      if (errorMessage.includes('sudah ada')) {
+        const shouldUpdate = window.confirm(
+          `Snapshot untuk periode ${selectedPeriod} sudah ada. Apakah Anda ingin memperbarui data snapshot tersebut dengan data stok saat ini?\n\n⚠️ Data snapshot lama akan dihapus dan diganti dengan data baru.`
+        );
+        
+        if (shouldUpdate) {
+          try {
+            await createSnapshot(selectedPeriod || undefined, true);
+          } catch (updateErr) {
+            // Error sudah di-handle di hook
+          }
+        }
+      }
+    }
+  };
 
   return (
     <WarehouseLayout>
@@ -88,7 +110,7 @@ export default function StockSnapshotPage() {
             <>
               <Button
                 colorScheme="teal"
-                onClick={() => createSnapshot(selectedPeriod || undefined)}
+                onClick={handleCreateSnapshot}
                 loading={isCreating}
                 loadingText="Creating..."
                 size="sm"
@@ -99,22 +121,43 @@ export default function StockSnapshotPage() {
                 <FiPlusCircle />
                 Create Snapshot
               </Button>
-              <Button
-                variant="outline"
-                colorScheme="teal"
-                onClick={() => createPreviousMonthSnapshot()}
-                loading={isCreating}
-                loadingText="Creating..."
-                size="sm"
-                display="flex"
-                gap={2}
-                alignItems="center"
-              >
-                <FiCalendar />
-                Previous Month
-              </Button>
             </>
           )}
+          {/* Export buttons - semua role bisa export */}
+          <Flex gap={2}>
+            <Button
+              variant="outline"
+              colorScheme="blue"
+              onClick={() => {
+                const url = `/api/snapshots/export/${selectedPeriod}?format=csv`;
+                window.open(url, '_blank');
+              }}
+              size="sm"
+              display="flex"
+              gap={2}
+              alignItems="center"
+              disabled={!selectedPeriod}
+            >
+              <FiDownload />
+              CSV
+            </Button>
+            <Button
+              variant="outline"
+              colorScheme="red"
+              onClick={() => {
+                const url = `/api/snapshots/export/${selectedPeriod}?format=pdf`;
+                window.open(url, '_blank');
+              }}
+              size="sm"
+              display="flex"
+              gap={2}
+              alignItems="center"
+              disabled={!selectedPeriod}
+            >
+              <FiDownload />
+              PDF
+            </Button>
+          </Flex>
         </Flex>
 
         {/* Summary Cards */}

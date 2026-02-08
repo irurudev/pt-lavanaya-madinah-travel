@@ -106,12 +106,17 @@ class SnapshotController extends Controller
 
         try {
             $dto = StockSnapshotDTO::from($request->validated());
-            $snapshots = $this->snapshotService->createSnapshot($dto);
+            $forceUpdate = $request->boolean('force_update', false);
+            $snapshots = $this->snapshotService->createSnapshot($dto, $forceUpdate);
             $period = $dto->period ?? now()->format('Y-m');
+
+            $message = $forceUpdate 
+                ? "Snapshot untuk periode {$period} berhasil diperbarui"
+                : "Snapshot untuk periode {$period} berhasil dibuat";
 
             return response()->json([
                 'success' => true,
-                'message' => "Snapshot untuk periode {$period} berhasil dibuat",
+                'message' => $message,
                 'data' => StockSnapshotResource::collection($snapshots),
             ], 201);
         } catch (\Exception $e) {
@@ -123,31 +128,47 @@ class SnapshotController extends Controller
     }
 
     /**
-     * Buat snapshot untuk bulan sebelumnya (period-end audit)
-     * POST /snapshots/previous-month
+     * Export snapshot report berdasarkan periode
+     * GET /snapshots/export/{period}
      */
-    public function createPreviousMonth(): JsonResponse
+    public function export(Request $request, string $period)
     {
-        // Check permission - hanya admin/operator bisa membuat snapshot
+        // Check permission untuk view snapshots
         $role = Auth::user()?->role;
-        if ($role !== UserRole::Admin && $role !== UserRole::Operator) {
-            abort(403, 'Unauthorized to create snapshots');
+        if (!in_array($role, [UserRole::Admin, UserRole::Operator, UserRole::Viewer], true)) {
+            abort(403, 'Unauthorized to export snapshots');
+        }
+
+        $format = strtolower($request->query('format', 'csv'));
+        
+        if (!in_array($format, ['csv', 'pdf'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Format tidak valid. Gunakan csv atau pdf',
+            ], 400);
         }
 
         try {
-            $snapshots = $this->snapshotService->createPreviousMonthSnapshot();
-            $period = now()->subMonth()->format('Y-m');
-
-            return response()->json([
-                'success' => true,
-                'message' => "Snapshot periode {$period} (bulan lalu) berhasil dibuat",
-                'data' => StockSnapshotResource::collection($snapshots),
-            ], 201);
+            $filename = "snapshot-report-{$period}." . $format;
+            
+            if ($format === 'csv') {
+                $content = $this->snapshotService->exportCSV($period);
+                return response($content)
+                    ->header('Content-Type', 'text/csv')
+                    ->header('Content-Disposition', "attachment; filename=\"{$filename}\"");
+            }
+            
+            // PDF
+            $content = $this->snapshotService->exportPDF($period);
+            return response($content)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', "attachment; filename=\"{$filename}\"");
+                
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
-            ], 400);
+                'message' => 'Export gagal: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

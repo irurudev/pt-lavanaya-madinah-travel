@@ -32,7 +32,7 @@ class ReportRepository
     /**
      * Mendapatkan laporan transaksi masuk & keluar dengan pagination
      */
-    public function getTransactionReport(?string $type = null, ?int $perPage = 15): LengthAwarePaginator
+    public function getTransactionReport(?string $type = null, ?int $perPage = 15, ?string $startDate = null, ?string $endDate = null): LengthAwarePaginator
     {
         $query = Transaction::with(['product', 'product.category', 'user'])
             ->select('transactions.id', 'transactions.product_id', 'transactions.user_id', 
@@ -43,23 +43,31 @@ class ReportRepository
             $query->where('type', $type);
         }
 
+        if ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
         return $query->orderBy('created_at', 'desc')->paginate($perPage);
     }
 
     /**
      * Mendapatkan laporan transaksi masuk
      */
-    public function getInboundReport(?int $perPage = 15): LengthAwarePaginator
+    public function getInboundReport(?int $perPage = 15, ?string $startDate = null, ?string $endDate = null): LengthAwarePaginator
     {
-        return $this->getTransactionReport(TransactionType::In->value, $perPage);
+        return $this->getTransactionReport(TransactionType::In->value, $perPage, $startDate, $endDate);
     }
 
     /**
      * Mendapatkan laporan transaksi keluar
      */
-    public function getOutboundReport(?int $perPage = 15): LengthAwarePaginator
+    public function getOutboundReport(?int $perPage = 15, ?string $startDate = null, ?string $endDate = null): LengthAwarePaginator
     {
-        return $this->getTransactionReport(TransactionType::Out->value, $perPage);
+        return $this->getTransactionReport(TransactionType::Out->value, $perPage, $startDate, $endDate);
     }
 
     /**
@@ -83,12 +91,23 @@ class ReportRepository
     /**
      * Mendapatkan ringkasan transaksi per bulan
      */
-    public function getTransactionSummary(): array
+    public function getTransactionSummary(?string $startDate = null, ?string $endDate = null): array
     {
-        $inboundTotal = Transaction::where('type', TransactionType::In->value)
-            ->sum('quantity');
-        $outboundTotal = Transaction::where('type', TransactionType::Out->value)
-            ->sum('quantity');
+        $inboundQuery = Transaction::where('type', TransactionType::In->value);
+        $outboundQuery = Transaction::where('type', TransactionType::Out->value);
+
+        if ($startDate) {
+            $inboundQuery->whereDate('created_at', '>=', $startDate);
+            $outboundQuery->whereDate('created_at', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $inboundQuery->whereDate('created_at', '<=', $endDate);
+            $outboundQuery->whereDate('created_at', '<=', $endDate);
+        }
+
+        $inboundTotal = $inboundQuery->sum('quantity');
+        $outboundTotal = $outboundQuery->sum('quantity');
 
         return [
             'inbound_total' => $inboundTotal,
