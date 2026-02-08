@@ -30,6 +30,14 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        // Tolak login jika user nonaktif
+        $user = User::where('email', $credentials['email'])->first();
+        if ($user && !$user->is_active) {
+            return back()->withErrors([
+                'email' => 'Akun tidak aktif. Silakan hubungi admin.',
+            ])->onlyInput('email');
+        }
+
         // Attempt login dengan credentials dan remember me
         if (Auth::attempt($credentials, remember: true)) {
             // Regenerate session untuk mencegah session fixation attack
