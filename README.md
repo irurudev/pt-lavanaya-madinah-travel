@@ -1,21 +1,26 @@
 # MySmartWarehouse
-Advanced inventory and warehouse management system built with Laravel and React.
+Sistem manajemen gudang untuk kategori, produk, transaksi, dan pelaporan dengan kontrol akses berbasis peran.
 
 Status: Production ready
-Version: 1.0.0
-Last updated: February 2026
+Versi: 1.0.0
+Terakhir diperbarui: February 2026
 
 ---
 
-## Features
-- Role-based access control (Admin, Operator, Viewer)
-- Category and product management
-- Automatic SKU generation (immutable)
-- Stock tracking with low-stock indicators
-- Inbound and outbound transaction records
-- Stock snapshots for periodic inventory checks
-- Reporting for transactions and stock
-- Soft deletes for master data (categories, products)
+## Ringkasan
+MySmartWarehouse adalah aplikasi gudang berbasis Laravel + React (Inertia) untuk operasional stok. Fitur utama mencakup master data (kategori/produk), transaksi masuk-keluar, snapshot stok, pelaporan, dan integritas data berbasis soft delete.
+
+---
+
+## Fitur Utama
+- RBAC: Admin, Operator, Viewer
+- Manajemen kategori dan produk
+- SKU otomatis (immutable)
+- Tracking stok dan indikator stok rendah
+- Transaksi inbound dan outbound
+- Snapshot stok berkala
+- Laporan transaksi dan stok
+- Soft delete untuk master data
 
 ---
 
@@ -29,83 +34,62 @@ Last updated: February 2026
 
 ---
 
-## Requirements
+## Prasyarat
 - PHP 8.2+
 - Composer
-- Node.js 18+ and npm
+- Node.js 18+ dan npm
 - MySQL 8.0+
 
 ---
 
 ## Quick Start
 ```bash
-# Install dependencies
 composer install
 npm install
 
-# Setup environment
 cp .env.example .env
 php artisan key:generate
 
-# Setup database
 php artisan migrate:fresh --seed
 
-# Run servers (two terminals)
 php artisan serve
 npm run dev
 ```
 
-Application URL: http://localhost:8000
+Akses aplikasi: http://localhost:8000
 
 ---
 
-## Environment Setup
-Example .env values:
+## Konfigurasi Environment
+Salin file env dan isi nilai minimal berikut agar aplikasi bisa jalan.
+
+Wajib:
 ```env
+APP_NAME="MySmartWarehouse"
+APP_URL=http://localhost:8000
+APP_ENV=local
+APP_DEBUG=true
+APP_TIMEZONE=Asia/Jakarta
+
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=ptlavanaya
 DB_USERNAME=root
 DB_PASSWORD=yourpassword
+```
 
-APP_NAME="MySmartWarehouse"
-APP_URL=http://localhost:8000
-APP_ENV=local
-APP_DEBUG=true
+Opsional (default di .env.example sudah aman untuk lokal):
+```env
+QUEUE_CONNECTION=database
+CACHE_STORE=database
+SESSION_DRIVER=database
+MAIL_MAILER=log
 ```
 
 ---
 
-## NPM Scripts
-```bash
-npm run dev        # Start Vite dev server
-npm run build      # Build assets for production
-npm run build:ssr  # Build SSR assets
-npm run types      # Type check (tsc --noEmit)
-npm run lint       # ESLint with auto-fix
-npm run format     # Prettier format resources/
-```
-
----
-
-## RBAC Overview
-- Admin: Full access
-- Operator: Manage products and transactions
-- Viewer: Read-only access
-
-Authorization is enforced via Laravel Policies and role checks.
-
----
-
-## Data Integrity and Soft Deletes
-- Categories and products use soft deletes
-- Product relations load soft deleted parents for history integrity
-- Creating a category with a deleted name restores the old record
-
----
-
-## Project Structure (Frontend)
+## Struktur Project (Frontend)
 ```
 resources/js/
   api/
@@ -121,7 +105,66 @@ resources/js/
 
 ---
 
+## Arsitektur Backend (Ringkas)
+Layer utama mengikuti pola Service Repository Action:
+
+- Request: validasi input
+- DTO: kontrak data antar layer
+- Repository: query database
+- Service: business logic utama
+- Action: tugas tunggal (opsional)
+- Policy: authorization
+- Controller: entry API
+- Resource: transform JSON
+
+---
+
+## RBAC
+- Admin: full access
+- Operator: manajemen produk dan transaksi
+- Viewer: read-only
+
+Authorization dijalankan via Policies dan role checks.
+
+---
+
+## Integritas Data (Soft Delete)
+- Kategori dan produk menggunakan soft delete
+- Relasi produk memuat kategori yang sudah dihapus (withTrashed) agar label tetap muncul
+- Jika membuat kategori dengan nama yang pernah dihapus, sistem melakukan restore data lama
+
+---
+
+## NPM Scripts
+```bash
+npm run dev        # Vite dev server
+npm run build      # Build production assets
+npm run build:ssr  # Build SSR assets
+npm run types      # Type check (tsc --noEmit)
+npm run lint       # ESLint --fix
+npm run format     # Prettier resources/
+```
+
+---
+
+## Seeding Data
+```bash
+php artisan db:seed
+```
+Untuk reset total:
+```bash
+php artisan migrate:fresh --seed
+```
+
+---
+
 ## Troubleshooting
-- Run `php artisan migrate:fresh --seed` if schema and seed data are out of sync
-- Run `npm run types` if the UI is not compiling
-- Check `.env` database settings if migrations fail
+- Jalankan `php artisan migrate:fresh --seed` jika struktur dan data tidak sinkron
+- Jalankan `npm run types` jika ada error TypeScript
+- Periksa koneksi DB di `.env` jika migration gagal
+
+---
+
+## Catatan Database Lokal
+- Aplikasi memakai driver database untuk queue, cache, dan session secara default.
+- Pastikan MySQL aktif dan user punya akses buat membuat tabel.
