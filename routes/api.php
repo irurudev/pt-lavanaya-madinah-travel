@@ -39,6 +39,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('reports/transactions/export', [ReportController::class, 'exportTransactions']);
     Route::get('reports/inbound', [ReportController::class, 'inboundReport']);
     Route::get('reports/outbound', [ReportController::class, 'outboundReport']);
+    
+    // Dashboard Analytics endpoints
+    Route::get('reports/analytics/financial', [ReportController::class, 'analyticsFinancial']);
+    Route::get('reports/analytics/fast-movers', [ReportController::class, 'analyticsFastMovers']);
+    Route::get('reports/analytics/slow-movers', [ReportController::class, 'analyticsSlowMovers']);
+    Route::get('reports/analytics/transaction-trends', [ReportController::class, 'analyticsTransactionTrends']);
+    Route::get('reports/analytics/critical-alerts', [ReportController::class, 'analyticsCriticalAlerts']);
+    Route::get('reports/analytics/category-performance', [ReportController::class, 'analyticsCategoryPerformance']);
+    Route::get('reports/analytics/operational-stats', [ReportController::class, 'analyticsOperationalStats']);
 
     // Snapshots endpoints (period-end audits)
     Route::get('snapshots', [SnapshotController::class, 'index']);

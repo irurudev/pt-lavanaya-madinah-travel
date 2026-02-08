@@ -58,4 +58,60 @@ class ReportService
     {
         return $this->reportRepository->getTransactionSummary($startDate, $endDate);
     }
+
+    /**
+     * Mendapatkan financial metrics untuk dashboard
+     */
+    public function getFinancialMetrics(): array
+    {
+        return $this->reportRepository->getFinancialMetrics();
+    }
+
+    /**
+     * Mendapatkan fast moving products (top outbound 30 hari)
+     */
+    public function getFastMovers(int $limit = 10): array
+    {
+        return $this->reportRepository->getFastMovers($limit);
+    }
+
+    /**
+     * Mendapatkan slow/dead stock products
+     */
+    public function getSlowMovers(int $limit = 10): array
+    {
+        return $this->reportRepository->getSlowMovers($limit);
+    }
+
+    /**
+     * Mendapatkan transaction trend data (30 hari)
+     */
+    public function getTransactionTrends(): array
+    {
+        return $this->reportRepository->getTransactionTrends();
+    }
+
+    /**
+     * Mendapatkan critical alerts dashboard
+     */
+    public function getCriticalAlerts(): array
+    {
+        return $this->reportRepository->getCriticalAlerts();
+    }
+
+    /**
+     * Mendapatkan category performance analysis
+     */
+    public function getCategoryPerformance(): array
+    {
+        return $this->reportRepository->getCategoryPerformance();
+    }
+
+    /**
+     * Mendapatkan operational statistics
+     */
+    public function getOperationalStats(): array
+    {
+        return $this->reportRepository->getOperationalStats();
+    }
 }

@@ -11,10 +11,15 @@ import {
   HStack,
   VStack,
   Icon,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import {
   FiPackage,
+  FiLayers,
   FiTrendingUp,
   FiAlertTriangle,
   FiDollarSign,
@@ -39,6 +44,7 @@ export default function DashboardPage() {
     financialMetrics,
     fastMovers,
     slowMovers,
+    transactionTrends,
     criticalAlerts,
     categoryPerformance,
     operationalStats,
@@ -71,6 +77,7 @@ export default function DashboardPage() {
     );
   }
 
+  // Format helper functions
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -80,15 +87,20 @@ export default function DashboardPage() {
     }).format(value);
   };
 
+  const formatNumber = (value: number) => {
+    return new Intl.NumberFormat('id-ID').format(value);
+  };
+
   return (
     <WarehouseLayout>
       <Stack gap={6}>
         <Heading size="2xl">🎯 Dashboard Warehouse Intelligence</Heading>
 
-        {/* SECTION 1: FINANCIAL METRICS */}
+        {/* ============ SECTION 1: FINANCIAL OVERVIEW ============ */}
         <Box bg={cardBg} shadow="md" rounded="lg" p={6} border="1px" borderColor={borderColor}>
           <Heading size="lg" mb={6}>💰 Financial Overview</Heading>
           <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={4}>
+            {/* Card 1: Total Inventory Value */}
             <Box bg="teal.50" rounded="lg" p={4} border="1px" borderColor="teal.200">
               <HStack justify="space-between" mb={2}>
                 <Text fontSize="sm" color="teal.700" fontWeight="medium">
@@ -102,6 +114,7 @@ export default function DashboardPage() {
               <Text fontSize="xs" color="teal.600">Nilai stok saat ini</Text>
             </Box>
 
+            {/* Card 2: Potential Revenue */}
             <Box bg="green.50" rounded="lg" p={4} border="1px" borderColor="green.200">
               <HStack justify="space-between" mb={2}>
                 <Text fontSize="sm" color="green.700" fontWeight="medium">
@@ -115,6 +128,7 @@ export default function DashboardPage() {
               <Text fontSize="xs" color="green.600">Jika semua stok terjual</Text>
             </Box>
 
+            {/* Card 3: Potential Gross Profit */}
             <Box bg="blue.50" rounded="lg" p={4} border="1px" borderColor="blue.200">
               <HStack justify="space-between" mb={2}>
                 <Text fontSize="sm" color="blue.700" fontWeight="medium">
@@ -128,6 +142,7 @@ export default function DashboardPage() {
               <Text fontSize="xs" color="blue.600">Gross profit potensial</Text>
             </Box>
 
+            {/* Card 4: Avg Transaction Value */}
             <Box bg="purple.50" rounded="lg" p={4} border="1px" borderColor="purple.200">
               <HStack justify="space-between" mb={2}>
                 <Text fontSize="sm" color="purple.700" fontWeight="medium">
@@ -143,54 +158,44 @@ export default function DashboardPage() {
           </SimpleGrid>
         </Box>
 
-        {/* SECTION 2: CRITICAL ALERTS */}
+        {/* ============ SECTION 2: CRITICAL ALERTS ============ */}
         {criticalAlerts && criticalAlerts.length > 0 && (
           <Box bg={cardBg} shadow="md" rounded="lg" p={6} border="1px" borderColor={borderColor}>
             <Heading size="lg" mb={4}>
               🚨 Critical Alerts ({criticalAlerts.length})
             </Heading>
             <Stack gap={3}>
-              {criticalAlerts.slice(0, 8).map((alert) => {
-                const bgColor = alert.severity === 'danger' ? 'red.50' : alert.severity === 'warning' ? 'orange.50' : 'blue.50';
-                const borderColorAlert = alert.severity === 'danger' ? 'red.200' : alert.severity === 'warning' ? 'orange.200' : 'blue.200';
-                const textColor = alert.severity === 'danger' ? 'red.700' : alert.severity === 'warning' ? 'orange.700' : 'blue.700';
-                
-                return (
-                  <Box
-                    key={alert.id}
-                    bg={bgColor}
-                    border="1px"
-                    borderColor={borderColorAlert}
-                    rounded="lg"
-                    p={3}
-                    borderLeft="4px"
-                  >
-                    <Text fontWeight="bold" fontSize="sm" color={textColor} mb={1}>
-                      {alert.title}
-                    </Text>
-                    <Text fontSize="xs" color={textColor}>
-                      {alert.message}
-                    </Text>
+              {criticalAlerts.slice(0, 8).map((alert) => (
+                <Alert
+                  key={alert.id}
+                  status={alert.severity === 'danger' ? 'error' : alert.severity === 'warning' ? 'warning' : 'info'}
+                  rounded="lg"
+                  variant="left-accent"
+                >
+                  <AlertIcon />
+                  <Box flex={1}>
+                    <AlertTitle fontSize="sm">{alert.title}</AlertTitle>
+                    <AlertDescription fontSize="xs">{alert.message}</AlertDescription>
                   </Box>
-                );
-              })}
+                </Alert>
+              ))}
             </Stack>
           </Box>
         )}
 
-        {/* SECTION 3: FAST & SLOW MOVERS */}
+        {/* ============ SECTION 3: FAST MOVERS vs SLOW MOVERS ============ */}
         <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6}>
+          {/* Fast Movers */}
           <Box bg={cardBg} shadow="md" rounded="lg" p={6} border="1px" borderColor={borderColor}>
             <Heading size="lg" mb={4} display="flex" alignItems="center" gap={2}>
-              <Icon as={FiArrowUp} color="green.500" /> Top 10 Fast Movers
+              <Icon as={FiArrowUp} color="green.500" /> Top 10 Fast Movers (30 hari)
             </Heading>
-            <Box maxH="400px" overflowY="auto">
-              <VStack gap={3} align="stretch">
-                {fastMovers && fastMovers.length > 0 ? (
-                  fastMovers.map((product) => (
+            <VStack gap={3} align="stretch">
+              {fastMovers && fastMovers.length > 0 ? (
+                fastMovers.slice(0, 5).map((product) => (
                   <Box key={product.id} bg="green.50" p={3} rounded="md" border="1px" borderColor="green.200">
                     <HStack justify="space-between" mb={1}>
-                      <VStack align="start" gap={0}>
+                      <VStack align="start" spacing={0}>
                         <Text fontWeight="bold" fontSize="sm">
                           {product.name}
                         </Text>
@@ -200,124 +205,43 @@ export default function DashboardPage() {
                       </VStack>
                       <Badge colorScheme="green">{product.total_outbound} unit</Badge>
                     </HStack>
+                    <HStack justify="space-between" fontSize="xs" color="gray.600">
+                      <Text>{product.transaction_count} transaksi</Text>
+                      <Text>Stok: {product.current_stock}</Text>
+                    </HStack>
                   </Box>
-                  ))
-                ) : (
-                  <Text color="gray.500" fontSize="sm">
-                    Tidak ada data
-                  </Text>
-                )}
-              </VStack>
-            </Box>
+                ))
+              ) : (
+                <Text color="gray.500" fontSize="sm">
+                  Tidak ada data
+                </Text>
+              )}
+            </VStack>
           </Box>
 
+          {/* Slow Movers */}
           <Box bg={cardBg} shadow="md" rounded="lg" p={6} border="1px" borderColor={borderColor}>
             <Heading size="lg" mb={4} display="flex" alignItems="center" gap={2}>
-              <Icon as={FiTrendingDown} color="orange.500" /> Slow/Dead Stock
+              <Icon as={FiTrendingDown} color="orange.500" /> Top 10 Slow/Dead Stock
             </Heading>
-            <Box maxH="400px" overflowY="auto">
-              <VStack gap={3} align="stretch">
-                {slowMovers && slowMovers.length > 0 ? (
-                  slowMovers.map((product) => (
+            <VStack gap={3} align="stretch">
+              {slowMovers && slowMovers.length > 0 ? (
+                slowMovers.slice(0, 5).map((product) => (
                   <Box key={product.id} bg="orange.50" p={3} rounded="md" border="1px" borderColor="orange.200">
                     <HStack justify="space-between" mb={1}>
-                      <Text fontWeight="bold" fontSize="sm">
-                        {product.name}
-                      </Text>
-                      <Badge colorScheme="orange">{product.days_no_movement > 30 ? "> 30" : product.days_no_movement} d</Badge>
+                      <VStack align="start" spacing={0}>
+                        <Text fontWeight="bold" fontSize="sm">
+                          {product.name}
+                        </Text>
+                        <Text fontSize="xs" color="gray.600">
+                          SKU: {product.sku}
+                        </Text>
+                      </VStack>
+                      <Badge colorScheme="orange">{product.days_no_movement} hari</Badge>
                     </HStack>
-                    <Text fontSize="xs" color="gray.600">
-                      SKU: {product.sku} | Stok: {product.current_stock}
-                    </Text>
-                  </Box>
-                  ))
-                ) : (
-                  <Text color="gray.500" fontSize="sm">
-                    Tidak ada data
-                  </Text>
-                )}
-              </VStack>
-            </Box>
-          </Box>
-        </SimpleGrid>
-
-        {/* SECTION 4: CATEGORY PERFORMANCE */}
-        <Box bg={cardBg} shadow="md" rounded="lg" p={6} border="1px" borderColor={borderColor}>
-          <Heading size="lg" mb={4} display="flex" alignItems="center" gap={2}>
-            <Icon as={FiPieChart} /> Category Performance
-          </Heading>
-          {categoryPerformance && categoryPerformance.length > 0 ? (
-            <VStack gap={2} align="stretch">
-              {categoryPerformance.map((cat) => (
-                <Box key={cat.category_id} p={3} bg="gray.50" rounded="md" border="1px" borderColor="gray.200">
-                  <HStack justify="space-between" mb={1}>
-                    <Text fontWeight="bold">{cat.category_name}</Text>
-                    <HStack gap={2}>
-                      <Badge colorScheme="blue">{cat.total_products} produk</Badge>
-                      <Badge colorScheme="green">In: {cat.inbound_30days}</Badge>
-                      <Badge colorScheme="red">Out: {cat.outbound_30days}</Badge>
-                    </HStack>
-                  </HStack>
-                  <Text fontSize="sm" color="gray.600">
-                    Nilai: {formatCurrency(cat.total_value)} | {cat.low_stock_count > 0 ? `${cat.low_stock_count} rendah` : 'OK'}
-                  </Text>
-                </Box>
-              ))}
-            </VStack>
-          ) : (
-            <Text color="gray.500">Tidak ada data</Text>
-          )}
-        </Box>
-
-        {/* SECTION 5: OPERATIONAL STATS */}
-        <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6}>
-          <Box bg={cardBg} shadow="md" rounded="lg" p={6} border="1px" borderColor={borderColor}>
-            <Heading size="lg" mb={4} display="flex" alignItems="center" gap={2}>
-              <Icon as={FiBarChart2} /> Operational Stats
-            </Heading>
-            <VStack gap={4} align="stretch">
-              <Box>
-                <HStack justify="space-between" mb={1}>
-                  <Text fontSize="sm" fontWeight="medium">Total Transaksi</Text>
-                  <Text fontSize="lg" fontWeight="bold">
-                    {operationalStats?.total_transactions_30days || 0}
-                  </Text>
-                </HStack>
-                <HStack fontSize="xs" color="gray.600" gap={4}>
-                  <HStack gap={1}>
-                    <Icon as={FiArrowUp} color="green.500" boxSize={4} />
-                    <Text>In: {operationalStats?.inbound_transactions_30days}</Text>
-                  </HStack>
-                  <HStack gap={1}>
-                    <Icon as={FiArrowDown} color="red.500" boxSize={4} />
-                    <Text>Out: {operationalStats?.outbound_transactions_30days}</Text>
-                  </HStack>
-                </HStack>
-              </Box>
-              <Box borderTop="1px" borderColor={borderColor} pt={4}>
-                <Text fontSize="sm" fontWeight="medium" mb={2}>
-                  Avg per Day
-                </Text>
-                <Text fontSize="2xl" fontWeight="bold" color="blue.600">
-                  {operationalStats?.avg_transactions_per_day.toFixed(1)} tx
-                </Text>
-              </Box>
-            </VStack>
-          </Box>
-
-          <Box bg={cardBg} shadow="md" rounded="lg" p={6} border="1px" borderColor={borderColor}>
-            <Heading size="lg" mb={4} display="flex" alignItems="center" gap={2}>
-              <Icon as={FiUsers} /> Top Operators
-            </Heading>
-            <VStack gap={2} align="stretch">
-              {operationalStats && operationalStats.top_operators && operationalStats.top_operators.length > 0 ? (
-                operationalStats.top_operators.slice(0, 5).map((op, idx) => (
-                  <Box key={op.user_id} bg="blue.50" p={2} rounded="md">
-                    <HStack justify="space-between" fontSize="sm">
-                      <Text fontWeight="medium">
-                        #{idx + 1} {op.operator_name}
-                      </Text>
-                      <Badge colorScheme="blue">{op.transaction_count}</Badge>
+                    <HStack justify="space-between" fontSize="xs" color="gray.600">
+                      <Text>Stok: {product.current_stock}</Text>
+                      <Text>{formatCurrency(product.stock_value)}</Text>
                     </HStack>
                   </Box>
                 ))
@@ -330,7 +254,158 @@ export default function DashboardPage() {
           </Box>
         </SimpleGrid>
 
-        {/* SECTION 6: SUMMARY CARDS */}
+        {/* ============ SECTION 4: CATEGORY PERFORMANCE ============ */}
+        <Box bg={cardBg} shadow="md" rounded="lg" p={6} border="1px" borderColor={borderColor}>
+          <Heading size="lg" mb={4} display="flex" alignItems="center" gap={2}>
+            <Icon as={FiPieChart} /> Category Performance (30 hari)
+          </Heading>
+          {categoryPerformance && categoryPerformance.length > 0 ? (
+            <Box overflowX="auto">
+              <Box as="div" borderWidth="1px" borderColor={borderColor} rounded="md" overflow="hidden">
+                {/* Header */}
+                <Box
+                  display="grid"
+                  gridTemplateColumns="2fr 1fr 1fr 1fr 1fr 1fr"
+                  bg="gray.100"
+                  borderBottom="1px"
+                  borderColor={borderColor}
+                  fontWeight="bold"
+                  fontSize="sm"
+                >
+                  <Box p={3}>Kategori</Box>
+                  <Box p={3} textAlign="right">Produk</Box>
+                  <Box p={3} textAlign="right">Nilai Stok</Box>
+                  <Box p={3} textAlign="right">Inbound</Box>
+                  <Box p={3} textAlign="right">Outbound</Box>
+                  <Box p={3} textAlign="right">Rendah</Box>
+                </Box>
+                {/* Body */}
+                {categoryPerformance.map((cat) => (
+                  <Box
+                    key={cat.category_id}
+                    display="grid"
+                    gridTemplateColumns="2fr 1fr 1fr 1fr 1fr 1fr"
+                    borderBottom="1px"
+                    borderColor={borderColor}
+                    fontSize="sm"
+                  >
+                    <Box p={3} fontWeight="medium">{cat.category_name}</Box>
+                    <Box p={3} textAlign="right">{cat.total_products}</Box>
+                    <Box p={3} textAlign="right">{formatCurrency(cat.total_value)}</Box>
+                    <Box p={3} textAlign="right">
+                      <Badge colorScheme="green">{cat.inbound_30days}</Badge>
+                    </Box>
+                    <Box p={3} textAlign="right">
+                      <Badge colorScheme="red">{cat.outbound_30days}</Badge>
+                    </Box>
+                    <Box p={3} textAlign="right">
+                      {cat.low_stock_count > 0 ? (
+                        <Badge colorScheme="orange">{cat.low_stock_count}</Badge>
+                      ) : (
+                        '—'
+                      )}
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          ) : (
+            <Text color="gray.500">Tidak ada data</Text>
+          )}
+        </Box>
+
+        {/* ============ SECTION 5: OPERATIONAL STATISTICS ============ */}
+        <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6}>
+              <Td isNumeric>
+                {cat.low_stock_count > 0 ? (
+                  <Badge colorScheme="orange">{cat.low_stock_count}</Badge>
+                ) : (
+                  '—'
+                )}
+              </Td>
+            </Box>
+              </Box>
+                )}
+              </Box>
+            </Box>
+          ) : (
+            <Text color="gray.500">Tidak ada data</Text>
+          )}
+        </Box>
+
+        {/* ============ SECTION 5: OPERATIONAL STATISTICS ============ */}
+        <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6}>
+          {/* Operational Stats */}
+          <Box bg={cardBg} shadow="md" rounded="lg" p={6} border="1px" borderColor={borderColor}>
+            <Heading size="lg" mb={4} display="flex" alignItems="center" gap={2}>
+              <Icon as={FiBarChart2} /> Operational Stats (30 hari)
+            </Heading>
+            <VStack gap={4} align="stretch">
+              <Box>
+                <HStack justify="space-between" mb={1}>
+                  <Text fontSize="sm" fontWeight="medium">Total Transaksi</Text>
+                  <Text fontSize="lg" fontWeight="bold">
+                    {operationalStats?.total_transactions_30days || 0}
+                  </Text>
+                </HStack>
+                <HStack fontSize="xs" color="gray.600" gap={4}>
+                  <HStack gap={1}>
+                    <Icon as={FiArrowUp} color="green.500" boxSize={4} />
+                    <Text>Masuk: {operationalStats?.inbound_transactions_30days}</Text>
+                  </HStack>
+                  <HStack gap={1}>
+                    <Icon as={FiArrowDown} color="red.500" boxSize={4} />
+                    <Text>Keluar: {operationalStats?.outbound_transactions_30days}</Text>
+                  </HStack>
+                </HStack>
+              </Box>
+              <Box borderTop="1px" borderColor={borderColor} pt={4}>
+                <Text fontSize="sm" fontWeight="medium" mb={2}>
+                  Rata-rata per Hari
+                </Text>
+                <Text fontSize="2xl" fontWeight="bold" color="blue.600">
+                  {operationalStats?.avg_transactions_per_day.toFixed(1)} transaksi
+                </Text>
+              </Box>
+            </VStack>
+          </Box>
+
+          {/* Top Operators */}
+          <Box bg={cardBg} shadow="md" rounded="lg" p={6} border="1px" borderColor={borderColor}>
+            <Heading size="lg" mb={4} display="flex" alignItems="center" gap={2}>
+              <Icon as={FiUsers} /> Top Operators (30 hari)
+            </Heading>
+            <VStack gap={3} align="stretch">
+              {operationalStats &&
+              operationalStats.top_operators &&
+              operationalStats.top_operators.length > 0 ? (
+                operationalStats.top_operators.map((op, idx) => (
+                  <Box key={op.user_id} bg="blue.50" p={3} rounded="md" border="1px" borderColor="blue.200">
+                    <HStack justify="space-between">
+                      <HStack gap={2}>
+                        <Text fontSize="lg" fontWeight="bold" color="blue.600" minW={6}>
+                          #{idx + 1}
+                        </Text>
+                        <VStack align="start" spacing={0}>
+                          <Text fontWeight="medium" fontSize="sm">
+                            {op.operator_name}
+                          </Text>
+                        </VStack>
+                      </HStack>
+                      <Badge colorScheme="blue">{op.transaction_count} transaksi</Badge>
+                    </HStack>
+                  </Box>
+                ))
+              ) : (
+                <Text color="gray.500" fontSize="sm">
+                  Tidak ada data
+                </Text>
+              )}
+            </VStack>
+          </Box>
+        </SimpleGrid>
+
+        {/* ============ SECTION 6: STOCK STATUS SUMMARY ============ */}
         <SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
           <Box bg="teal.500" color="white" shadow="md" rounded="lg" p={6}>
             <Stack gap={2}>
@@ -354,34 +429,35 @@ export default function DashboardPage() {
             </Stack>
           </Box>
 
-          <Box bg={lowStockProducts === 0 ? "green.500" : "red.500"} color="white" shadow="md" rounded="lg" p={6}>
+          <Box bg="green.500" color="white" shadow="md" rounded="lg" p={6}>
             <Stack gap={2}>
               <Text fontSize="sm" display="flex" alignItems="center" gap={2}>
-                <Icon as={FiTrendingUp} /> Status Warehouse
+                <Icon as={FiTrendingUp} /> Status
               </Text>
-              {lowStockProducts === 0 ? (
-                <>
-                  <Text fontSize="3xl" fontWeight="bold">✓ Aman</Text>
-                  <Text fontSize="xs">Semua stok dalam kondisi baik</Text>
-                </>
-              ) : (
-                <>
-                  <Text fontSize="3xl" fontWeight="bold">⚠ Perhatian</Text>
-                  <Text fontSize="xs">{lowStockProducts} produk stok rendah</Text>
-                </>
-              )}
+              <Text fontSize="3xl" fontWeight="bold">
+                {lowStockProducts === 0 ? '✓ Aman' : '⚠ Alert'}
+              </Text>
             </Stack>
           </Box>
         </SimpleGrid>
 
-        {/* INFO BOX */}
+        {/* ============ SYSTEM INFO ============ */}
         <Box bg="blue.50" border="1px" borderColor="blue.200" p={4} rounded="md">
           <Text fontWeight="bold" color="blue.700" mb={2}>
-            ℹ️ Dashboard Analytics
+            ℹ️ Informasi Sistem
           </Text>
-          <Text fontSize="sm" color="blue.700">
-            Dashboard menampilkan data real-time: financial metrics, fast/slow movers, critical alerts, category performance, dan operational statistics untuk periode 30 hari terakhir.
+          <Text fontSize="sm" color="blue.700" mb={2}>
+            Dashboard ini menampilkan analytics real-time berdasarkan data transaksi dan snapshot stok. Semua data
+            diperbarui setiap kali Anda membuka halaman ini.
           </Text>
+          <Box as="ul" mt={2} pl={6} fontSize="sm" color="blue.700" spacing={1}>
+            <li>📊 Financial metrics didasarkan pada stok & harga saat ini + 30 hari terakhir</li>
+            <li>🚀 Fast movers = produk dengan outbound terbanyak (top 10)</li>
+            <li>🐌 Slow movers = produk tanpa outbound selama 30+ hari</li>
+            <li>🚨 Critical alerts = stok kritis, overstock, zero movement, & negative margin</li>
+            <li>📈 Category performance = ringkasan per kategori (stok, value, transaksi 30 hari)</li>
+            <li>⚡ Operational stats = total transaksi, top operators, & turnover rate 30 hari</li>
+          </Box>
         </Box>
       </Stack>
     </WarehouseLayout>

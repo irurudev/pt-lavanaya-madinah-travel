@@ -184,3 +184,89 @@ export interface StockSnapshotSummary {
   total_value: number;
   average_stock: number;
 }
+
+// ============ ANALYTICS DASHBOARD TYPES ============
+
+export interface FinancialMetrics {
+  total_inventory_value: number;
+  potential_revenue: number;
+  potential_gross_profit: number;
+  inbound_value_30days: number;
+  outbound_value_30days: number;
+  average_transaction_value: number;
+}
+
+export interface FastMover {
+  id: number;
+  sku: string;
+  name: string;
+  category: string;
+  total_outbound: number;
+  transaction_count: number;
+  current_stock: number;
+  stock_value: number;
+}
+
+export interface SlowMover {
+  id: number;
+  sku: string;
+  name: string;
+  category: string;
+  current_stock: number;
+  stock_value: number;
+  days_no_movement: number;
+  last_outbound_date: string | null;
+}
+
+export interface TransactionTrend {
+  date: string;
+  inbound: number;
+  outbound: number;
+}
+
+export interface CriticalAlert {
+  id: string;
+  type: 'critical_stock' | 'overstock' | 'zero_movement' | 'negative_margin';
+  severity: 'danger' | 'warning' | 'info';
+  title: string;
+  message: string;
+  product_id: number;
+  product_name: string;
+  current_stock?: number;
+  min_stock?: number;
+  days_no_movement?: number;
+  buy_price?: number;
+  sell_price?: number;
+}
+
+export interface CategoryPerformance {
+  category_id: number;
+  category_name: string;
+  total_products: number;
+  total_stock: number;
+  total_value: number;
+  potential_revenue: number;
+  inbound_30days: number;
+  outbound_30days: number;
+  low_stock_count: number;
+}
+
+export interface OperationalStats {
+  total_transactions_30days: number;
+  inbound_transactions_30days: number;
+  outbound_transactions_30days: number;
+  avg_transactions_per_day: number;
+  top_operators: Array<{
+    user_id: number;
+    operator_name: string;
+    transaction_count: number;
+  }>;
+  stock_turnover_top: Array<{
+    id: number;
+    sku: string;
+    name: string;
+    outbound_30days: number;
+    avg_stock: number;
+    turnover_rate: string;
+  }>;
+}

@@ -203,4 +203,158 @@ class ReportController extends Controller
             ]);
         }
     }
+
+    /**
+     * Dashboard Analytics: Financial Metrics
+     * GET /reports/analytics/financial
+     */
+    public function analyticsFinancial(): JsonResponse
+    {
+        try {
+            $metrics = $this->reportService->getFinancialMetrics();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $metrics,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Dashboard Analytics: Fast Movers (Top 10 outbound 30 days)
+     * GET /reports/analytics/fast-movers?limit=10
+     */
+    public function analyticsFastMovers(Request $request): JsonResponse
+    {
+        try {
+            $limit = (int) $request->query('limit', 10);
+            $limit = $limit > 0 && $limit <= 20 ? $limit : 10;
+            
+            $fastMovers = $this->reportService->getFastMovers($limit);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $fastMovers,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Dashboard Analytics: Slow/Dead Stock
+     * GET /reports/analytics/slow-movers?limit=10
+     */
+    public function analyticsSlowMovers(Request $request): JsonResponse
+    {
+        try {
+            $limit = (int) $request->query('limit', 10);
+            $limit = $limit > 0 && $limit <= 20 ? $limit : 10;
+            
+            $slowMovers = $this->reportService->getSlowMovers($limit);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $slowMovers,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Dashboard Analytics: Transaction Trends (30 days daily)
+     * GET /reports/analytics/transaction-trends
+     */
+    public function analyticsTransactionTrends(): JsonResponse
+    {
+        try {
+            $trends = $this->reportService->getTransactionTrends();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $trends,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Dashboard Analytics: Critical Alerts
+     * GET /reports/analytics/critical-alerts
+     */
+    public function analyticsCriticalAlerts(): JsonResponse
+    {
+        try {
+            $alerts = $this->reportService->getCriticalAlerts();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $alerts,
+                'total_alerts' => count($alerts),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Dashboard Analytics: Category Performance
+     * GET /reports/analytics/category-performance
+     */
+    public function analyticsCategoryPerformance(): JsonResponse
+    {
+        try {
+            $categoryPerf = $this->reportService->getCategoryPerformance();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $categoryPerf,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Dashboard Analytics: Operational Statistics
+     * GET /reports/analytics/operational-stats
+     */
+    public function analyticsOperationalStats(): JsonResponse
+    {
+        try {
+            $stats = $this->reportService->getOperationalStats();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $stats,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
