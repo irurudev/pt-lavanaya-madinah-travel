@@ -18,10 +18,11 @@ class StockSnapshot extends Model
     ];
 
     /**
-     * Relasi ke product
+     * Relasi ke product - include soft deleted products
+     * untuk menjaga snapshot history tetap utuh
      */
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 }

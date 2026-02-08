@@ -27,7 +27,7 @@ class UpdateCategoryRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('categories', 'name')->ignore($this->category),
+                Rule::unique('categories', 'name')->whereNull('deleted_at')->ignore($this->category),
             ],
         ];
     }

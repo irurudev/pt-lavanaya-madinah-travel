@@ -9,7 +9,7 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { FiPackage, FiLayers, FiTrendingUp, FiAlertTriangle } from 'react-icons/fi';
+import { FiPackage, FiLayers, FiTrendingUp, FiAlertTriangle, FiDollarSign, FiPieChart } from 'react-icons/fi';
 import { useProducts } from '@/hooks/useProducts';
 import WarehouseLayout from '@/layouts/WarehouseLayout';
 import type { Product } from '@/types/warehouse';
@@ -42,6 +42,16 @@ export default function DashboardPage() {
   const totalProducts = products.length;
   const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
   const averageStock = totalProducts > 0 ? Math.round(totalStock / totalProducts) : 0;
+  const totalStockValue = products.reduce((sum, p) => sum + (p.stock * Number(p.buy_price || 0)), 0);
+  const lowStockRate = totalProducts > 0
+    ? Math.round((lowStockProducts.length / totalProducts) * 100)
+    : 0;
+  const averageStockValue = totalProducts > 0
+    ? Math.round(totalStockValue / totalProducts)
+    : 0;
+  const highestStockProduct = products.length > 0
+    ? products.reduce((max, p) => (p.stock > max.stock ? p : max), products[0])
+    : null;
 
   if (loading) {
     return (
@@ -59,7 +69,7 @@ export default function DashboardPage() {
         <Heading size="2xl">Dashboard Warehouse</Heading>
 
         {/* Statistik Cards */}
-        <Grid templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }} gap={4}>
+        <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={4}>
           <Box bg="teal.500" color="white" shadow="md" rounded="lg" p={6}>
             <Stack gap={2}>
               <Text fontSize="sm" display="flex" alignItems="center" gap={2}>
@@ -103,7 +113,58 @@ export default function DashboardPage() {
               </Text>
             </Stack>
           </Box>
+
+          <Box bg="purple.500" color="white" shadow="md" rounded="lg" p={6}>
+            <Stack gap={2}>
+              <Text fontSize="sm" display="flex" alignItems="center" gap={2}>
+                <FiDollarSign /> Nilai Stok
+              </Text>
+              <Text fontSize="3xl" fontWeight="bold">
+                Rp{totalStockValue.toLocaleString('id-ID')}
+              </Text>
+            </Stack>
+          </Box>
+
+          <Box bg="pink.500" color="white" shadow="md" rounded="lg" p={6}>
+            <Stack gap={2}>
+              <Text fontSize="sm" display="flex" alignItems="center" gap={2}>
+                <FiPieChart /> Rasio Stok Rendah
+              </Text>
+              <Text fontSize="3xl" fontWeight="bold">
+                {lowStockRate}%
+              </Text>
+            </Stack>
+          </Box>
         </Grid>
+
+        {/* Analitik Ringkas */}
+        <Box bg="white" shadow="md" rounded="lg" p={6}>
+          <Heading size="lg" mb={4}>Analitik Ringkas</Heading>
+          <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={4}>
+            <Box bg="gray.50" border="1px" borderColor="gray.200" rounded="lg" p={4}>
+              <Text fontSize="sm" color="gray.600">Rata-rata Nilai Stok per Produk</Text>
+              <Text fontSize="2xl" fontWeight="bold" color="gray.800" mt={2}>
+                Rp{averageStockValue.toLocaleString('id-ID')}
+              </Text>
+            </Box>
+            <Box bg="gray.50" border="1px" borderColor="gray.200" rounded="lg" p={4}>
+              <Text fontSize="sm" color="gray.600">Produk Stok Terbanyak</Text>
+              <Text fontSize="lg" fontWeight="bold" color="gray.800" mt={2}>
+                {highestStockProduct ? highestStockProduct.name : '-'}
+              </Text>
+              <Text fontSize="sm" color="gray.600">
+                {highestStockProduct ? `${highestStockProduct.stock} unit` : 'Belum ada data'}
+              </Text>
+            </Box>
+            <Box bg="gray.50" border="1px" borderColor="gray.200" rounded="lg" p={4}>
+              <Text fontSize="sm" color="gray.600">Rata-rata Stok per Produk</Text>
+              <Text fontSize="2xl" fontWeight="bold" color="gray.800" mt={2}>
+                {averageStock}
+              </Text>
+              <Text fontSize="sm" color="gray.600">unit per produk</Text>
+            </Box>
+          </Grid>
+        </Box>
 
         {/* Produk dengan Stok Rendah */}
         <Box bg="white" shadow="md" rounded="lg" p={6}>

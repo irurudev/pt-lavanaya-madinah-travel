@@ -41,7 +41,8 @@ enum UserRole: string
             self::Admin => true, // Admin bisa semua
             self::Operator => in_array($permission, [
                 'view_reports', 'create_transactions', 'view_products',
-                'view_categories', 'create_snapshots'
+                'view_categories', 'create_snapshots', 'delete_products',
+                'edit_products_stock'
             ]),
             self::Viewer => in_array($permission, [
                 'view_reports', 'view_products', 'view_categories'

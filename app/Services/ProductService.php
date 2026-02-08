@@ -71,14 +71,21 @@ class ProductService
      */
     public function updateProduct(Product $product, ProductDTO $dto): Product
     {
-        return $this->productRepository->update($product, [
+        $updateData = [
             'category_id' => $dto->category_id,
             'name' => $dto->name,
             'min_stock' => $dto->min_stock,
             'buy_price' => $dto->buy_price,
             'sell_price' => $dto->sell_price,
             'unit_price' => $dto->buy_price,
-        ]);
+        ];
+
+        // Jika stock diberikan, include dalam update
+        if ($dto->stock > 0) {
+            $updateData['stock'] = $dto->stock;
+        }
+
+        return $this->productRepository->update($product, $updateData);
     }
 
     /**

@@ -11,6 +11,7 @@ class TransactionRepository
 {
     /**
      * Mendapatkan semua transaksi dengan relasi diurutkan dari yang terbaru
+     * Product dan category yang soft deleted tetap dimuat via withTrashed() untuk integritas data transaksi
      */
     public function getAll(): Collection
     {
@@ -19,6 +20,7 @@ class TransactionRepository
 
     /**
      * Mendapatkan transaksi dengan pagination diurutkan dari yang terbaru
+     * Product dan category yang soft deleted tetap dimuat via withTrashed() untuk integritas data transaksi
      */
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
@@ -27,6 +29,7 @@ class TransactionRepository
 
     /**
      * Mencari transaksi berdasarkan ID
+     * Product dan category yang soft deleted tetap dimuat via withTrashed() untuk integritas data transaksi
      */
     public function findById(int $id): ?Transaction
     {
@@ -35,26 +38,29 @@ class TransactionRepository
 
     /**
      * Mencari transaksi berdasarkan produk
+     * Include product.category relasi dengan soft deleted support untuk integritas data
      */
     public function findByProduct(int $productId): Collection
     {
-        return Transaction::where('product_id', $productId)->orderBy('created_at', 'desc')->get();
+        return Transaction::with(['product.category', 'user'])->where('product_id', $productId)->orderBy('created_at', 'desc')->get();
     }
 
     /**
      * Mencari transaksi berdasarkan tipe (in/out)
+     * Include relasi untuk integritas data
      */
     public function findByType(TransactionType $type): Collection
     {
-        return Transaction::where('type', $type)->orderBy('created_at', 'desc')->get();
+        return Transaction::with(['product.category', 'user'])->where('type', $type)->orderBy('created_at', 'desc')->get();
     }
 
     /**
      * Mendapatkan transaksi dalam range tanggal
+     * Include relasi untuk integritas data
      */
     public function findByDateRange(string $startDate, string $endDate): Collection
     {
-        return Transaction::whereBetween('created_at', [$startDate, $endDate])
+        return Transaction::with(['product.category', 'user'])->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();
     }

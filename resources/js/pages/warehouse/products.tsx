@@ -192,8 +192,8 @@ export default function ProductsPage() {
                           >
                             <FiEdit2 />
                           </IconButton>
-                          {/* Only admin can delete products - historical data integrity */}
-                          {isAdmin && (
+                          {/* Operator dan admin dapat delete produk */}
+                          {(isAdmin || user?.role === 'operator') && (
                             <IconButton
                               size="sm"
                               variant="ghost"

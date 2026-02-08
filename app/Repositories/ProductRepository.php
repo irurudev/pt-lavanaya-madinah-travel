@@ -10,6 +10,7 @@ class ProductRepository
 {
     /**
      * Mendapatkan semua produk dengan relasi diurutkan dari yang terbaru
+     * Kategori yang soft deleted tetap dimuat via withTrashed() untuk integritas data
      */
     public function getAll(): Collection
     {
@@ -18,6 +19,7 @@ class ProductRepository
 
     /**
      * Mendapatkan produk dengan pagination diurutkan dari yang terbaru
+     * Kategori yang soft deleted tetap dimuat via withTrashed() untuk integritas data
      */
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
@@ -26,6 +28,7 @@ class ProductRepository
 
     /**
      * Mencari produk berdasarkan ID
+     * Kategori yang soft deleted tetap dimuat via withTrashed() untuk integritas data
      */
     public function findById(int $id): ?Product
     {
@@ -34,10 +37,11 @@ class ProductRepository
 
     /**
      * Mencari produk berdasarkan kategori diurutkan dari yang terbaru
+     * Include relasi kategori untuk tampilkan label kategori
      */
     public function findByCategory(int $categoryId): Collection
     {
-        return Product::where('category_id', $categoryId)->orderBy('id', 'desc')->get();
+        return Product::with('category')->where('category_id', $categoryId)->orderBy('id', 'desc')->get();
     }
 
     /**
@@ -50,10 +54,11 @@ class ProductRepository
 
     /**
      * Mencari produk dengan stok rendah (di bawah min_stock) diurutkan dari yang terbaru
+     * Kategori yang soft deleted tetap dimuat via withTrashed() untuk integritas data
      */
     public function getLowStockProducts(): Collection
     {
-        return Product::whereColumn('stock', '<=', 'min_stock')->orderBy('id', 'desc')->get();
+        return Product::with('category')->whereColumn('stock', '<=', 'min_stock')->orderBy('id', 'desc')->get();
     }
 
     /**

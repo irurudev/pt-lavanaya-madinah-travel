@@ -172,96 +172,32 @@ export default function Users() {
         ) : (
           <Box bg="white" shadow="md" rounded="lg" overflow="hidden">
             <Box overflowX="auto">
-              <table
-                style={{
-                  width: '100%',
-                  borderCollapse: 'collapse',
-                }}
-              >
-                <thead
-                  style={{
-                    backgroundColor: '#f7fafc',
-                    borderBottomWidth: '1px',
-                  }}
-                >
-                  <tr>
-                    <th
-                      style={{
-                        padding: '12px',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        fontSize: '0.875rem',
-                        minWidth: '50px',
-                      }}
-                    >
+              <Box as="table" width="full" style={{ borderCollapse: 'collapse' }}>
+                <Box as="thead" bg="gray.50" borderBottom="1px" borderColor="gray.200">
+                  <Box as="tr">
+                    <Box as="th" p={3} textAlign="left" fontWeight="semibold" minW="50px">
                       #
-                    </th>
-                    <th
-                      style={{
-                        padding: '12px',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        fontSize: '0.875rem',
-                        minWidth: '200px',
-                      }}
-                    >
+                    </Box>
+                    <Box as="th" p={3} textAlign="left" fontWeight="semibold" minW="200px">
                       Nama
-                    </th>
-                    <th
-                      style={{
-                        padding: '12px',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        fontSize: '0.875rem',
-                        minWidth: '200px',
-                      }}
-                    >
+                    </Box>
+                    <Box as="th" p={3} textAlign="left" fontWeight="semibold" minW="220px">
                       Email
-                    </th>
-                    <th
-                      style={{
-                        padding: '12px',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        fontSize: '0.875rem',
-                        minWidth: '120px',
-                      }}
-                    >
+                    </Box>
+                    <Box as="th" p={3} textAlign="center" fontWeight="semibold" minW="140px">
                       Role
-                    </th>
-                    <th
-                      style={{
-                        padding: '12px',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        fontSize: '0.875rem',
-                        minWidth: '100px',
-                      }}
-                    >
+                    </Box>
+                    <Box as="th" p={3} textAlign="center" fontWeight="semibold" minW="120px">
                       Status
-                    </th>
-                    <th
-                      style={{
-                        padding: '12px',
-                        textAlign: 'right',
-                        fontWeight: '600',
-                        fontSize: '0.875rem',
-                        minWidth: '100px',
-                      }}
-                    >
+                    </Box>
+                    <Box as="th" p={3} textAlign="right" fontWeight="semibold" minW="100px">
                       Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </Box>
+                  </Box>
+                </Box>
+                <Box as="tbody">
                   {users.map((user, index) => (
-                    <tr
-                      key={user.id}
-                      style={{
-                        borderBottomWidth: '1px',
-                        borderColor: '#e2e8f0',
-                      }}
-                    >
+                    <Box as="tr" key={user.id} borderBottom="1px" borderColor="gray.100">
                       <Box as="td" p={3} minW="50px">
                         {((pagination?.current_page || 1) - 1) *
                           (pagination?.per_page || 10) +
@@ -270,18 +206,16 @@ export default function Users() {
                       <Box as="td" p={3} minW="200px" fontWeight="500">
                         {user.name}
                       </Box>
-                      <Box as="td" p={3} minW="200px" fontSize="0.875rem">
+                      <Box as="td" p={3} minW="220px" fontSize="0.875rem">
                         {user.email}
                       </Box>
-                      <Box as="td" p={3} minW="120px">
+                      <Box as="td" p={3} minW="140px" textAlign="center">
                         <Badge colorScheme={getRoleBadgeColor(user.role)}>
                           {getRoleLabel(user.role)}
                         </Badge>
                       </Box>
-                      <Box as="td" p={3} minW="100px">
-                        <Badge
-                          colorScheme={user.is_active ? 'green' : 'red'}
-                        >
+                      <Box as="td" p={3} minW="120px" textAlign="center">
+                        <Badge colorScheme={user.is_active ? 'green' : 'red'}>
                           {user.is_active ? 'Aktif' : 'Nonaktif'}
                         </Badge>
                       </Box>
@@ -299,10 +233,10 @@ export default function Users() {
                           </IconButton>
                         </Flex>
                       </Box>
-                    </tr>
+                    </Box>
                   ))}
-                </tbody>
-              </table>
+                </Box>
+              </Box>
             </Box>
           </Box>
         )}

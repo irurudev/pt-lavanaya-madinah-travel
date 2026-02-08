@@ -31,11 +31,12 @@ class Product extends Model
     ];
 
     /**
-     * Relasi ke category
+     * Relasi ke category - include soft deleted categories
+     * untuk menjaga label kategori tetap muncul meskipun kategori dihapus
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class)->withTrashed();
     }
 
     /**

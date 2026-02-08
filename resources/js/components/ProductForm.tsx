@@ -31,6 +31,7 @@ export function ProductForm({
   const [formData, setFormData] = useState({
     category_id: initialData?.category_id || '',
     name: initialData?.name || '',
+    stock: initialData?.stock || '',
     min_stock: initialData?.min_stock || '',
     buy_price: initialData?.buy_price || '',
     sell_price: initialData?.sell_price || '',
@@ -42,6 +43,7 @@ export function ProductForm({
     const nextFormData = {
       category_id: initialData?.category_id || '',
       name: initialData?.name || '',
+      stock: initialData?.stock || '',
       min_stock: initialData?.min_stock || '',
       buy_price: initialData?.buy_price || '',
       sell_price: initialData?.sell_price || '',
@@ -92,8 +94,12 @@ export function ProductForm({
       };
 
       if (initialData) {
+        const updatePayload: UpdateProductPayload = {
+          ...payload,
+          stock: formData.stock ? Number(formData.stock) : undefined,
+        };
         if (onUpdateProduct) {
-          await onUpdateProduct(initialData.id, payload);
+          await onUpdateProduct(initialData.id, updatePayload);
         }
       } else {
         if (onCreateProduct) {
@@ -105,6 +111,7 @@ export function ProductForm({
         setFormData({
           category_id: '',
           name: '',
+          stock: '',
           min_stock: '',
           buy_price: '',
           sell_price: '',
@@ -126,7 +133,7 @@ export function ProductForm({
           </Box>
         )}
 
-        <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={4}>
+        <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
           <Box>
             <Text mb={2} fontWeight="semibold">Nama Produk</Text>
             <Input
@@ -158,7 +165,9 @@ export function ProductForm({
               </NativeSelectField>
             </NativeSelectRoot>
           </Box>
+        </Grid>
 
+        <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
           <Box>
             <Text mb={2} fontWeight="semibold">Stok Minimal</Text>
             <Input
@@ -171,6 +180,29 @@ export function ProductForm({
               disabled={isLoading}
               min="0"
             />
+          </Box>
+          <Box>
+            <Text mb={2} fontWeight="semibold">Stok</Text>
+            <Input
+              type="number"
+              name="stock"
+              placeholder="0"
+              value={formData.stock}
+              onChange={handleChange}
+              size="lg"
+              disabled={isLoading || !initialData}
+              min="0"
+            />
+            {!initialData && (
+              <Text fontSize="xs" color="gray.500" mt={2}>
+                Stok awal akan diatur otomatis ke 0 saat produk dibuat.
+              </Text>
+            )}
+            {initialData && (
+              <Text fontSize="xs" color="gray.600" mt={2}>
+                Stok saat ini: {initialData.stock}
+              </Text>
+            )}
           </Box>
         </Grid>
 

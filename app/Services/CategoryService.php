@@ -39,10 +39,23 @@ class CategoryService
     }
 
     /**
-     * Membuat kategori baru
+     * Membuat kategori baru atau restore soft deleted jika sudah ada
+     * Support untuk recreate kategori dengan nama sama setelah dihapus
      */
     public function createCategory(CategoryDTO $dto): Category
     {
+        // Cek apakah ada soft deleted category dengan nama yang sama
+        $deletedCategory = Category::onlyTrashed()
+            ->where('name', $dto->name)
+            ->first();
+
+        // Jika ada, restore itu untuk menjaga data integrity dan relasi yang sudah ada
+        if ($deletedCategory) {
+            $deletedCategory->restore();
+            return $deletedCategory;
+        }
+
+        // Jika tidak ada, create kategori baru
         return $this->categoryRepository->create([
             'name' => $dto->name,
         ]);

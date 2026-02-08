@@ -42,11 +42,11 @@ class ProductPolicy
     }
 
     /**
-     * Check apakah user bisa menghapus product (hanya admin)
+     * Check apakah user bisa menghapus product (admin dan operator)
      */
     public function delete(User $user, Product $product): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isOperator();
     }
 
     /**

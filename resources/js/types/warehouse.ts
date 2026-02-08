@@ -72,6 +72,7 @@ export interface CreateProductPayload {
 export interface UpdateProductPayload {
   category_id: number;
   name: string;
+  stock?: number;
   min_stock: number;
   buy_price: string | number;
   sell_price: string | number;

@@ -25,11 +25,12 @@ class Transaction extends Model
     ];
 
     /**
-     * Relasi ke product
+     * Relasi ke product - include soft deleted products
+     * untuk menjaga data transaksi tetap utuh
      */
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     /**
