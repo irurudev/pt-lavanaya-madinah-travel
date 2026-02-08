@@ -12,8 +12,8 @@ import {
   Input,
   IconButton,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import { usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
 import { PaginationControls } from '@/components/PaginationControls';
 import { TransactionForm } from '@/components/TransactionForm';

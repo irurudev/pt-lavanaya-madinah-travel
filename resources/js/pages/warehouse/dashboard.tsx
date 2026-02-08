@@ -1,6 +1,5 @@
 import {
   Box,
-  Grid,
   Heading,
   Text,
   Badge,

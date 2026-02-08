@@ -9,8 +9,8 @@ import {
   Text,
   IconButton,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import { usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { CategoryForm } from '@/components/CategoryForm';
 import { PaginationControls } from '@/components/PaginationControls';

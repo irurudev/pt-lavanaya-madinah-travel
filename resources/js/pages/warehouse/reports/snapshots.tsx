@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Button,
@@ -12,11 +11,12 @@ import {
   Card,
   Badge,
 } from '@chakra-ui/react';
+import { usePage } from '@inertiajs/react';
+import React from 'react';
 import { FiPlusCircle, FiDownload } from 'react-icons/fi';
 import { PaginationControls } from '@/components/PaginationControls';
 import { useStockSnapshots } from '@/hooks/useSnapshot';
 import WarehouseLayout from '@/layouts/WarehouseLayout';
-import { usePage } from '@inertiajs/react';
 
 /**
  * Halaman laporan snapshot stok per periode
@@ -56,6 +56,7 @@ export default function StockSnapshotPage() {
         if (shouldUpdate) {
           try {
             await createSnapshot(selectedPeriod || undefined, true);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (updateErr) {
             // Error sudah di-handle di hook
           }
